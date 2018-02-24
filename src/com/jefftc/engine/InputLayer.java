@@ -9,6 +9,11 @@ import java.util.Scanner;
  */
 public class InputLayer {
 
+    private static final double CONVERT_TO_PERCENT = 100.0;
+    private static final double BASE_VALUE = 1.0;
+    private static final int STATUS_SIZE = 50;
+    private static final int MESSAGE_PADDING = 2;
+
     private boolean isUser;
     private Scanner scanner;
     private Command[] commands;
@@ -73,6 +78,27 @@ public class InputLayer {
     }
 
     /**
+     * Request the user for an integer in an inclusive range
+     *
+     * @param min the minimum acceptable value
+     * @param max the maximum acceptable value
+     * @return the value the user supplied
+     */
+    public int expectInt(int min, int max) {
+        String response = this.receiveInput();
+        try {
+            int value = Integer.parseInt(response);
+            if (value >= min && value <= max) {
+                return value;
+            }
+        } catch (Exception ignored) {
+        }
+
+        this.println("You must supply a valid integer between " + min + " and " + max);
+        return this.expectInt(min, max);
+    }
+
+    /**
      * Print to the output log as well as the console if user input is on
      *
      * @param message the message to print
@@ -97,7 +123,7 @@ public class InputLayer {
         if (cleanMessage.length() > 0) {
             outputHistory.add(cleanMessage);
             if (isUser) {
-                System.out.println("\t> " + cleanMessage);
+                System.out.println("\t" + cleanMessage);
             }
         }
     }
@@ -118,13 +144,45 @@ public class InputLayer {
                 String format = "%-" + colWidth + "s";
 
                 if (indented) {
-                    System.out.print("\t> ");
+                    System.out.print("\t");
                 }
                 for (String col : columns) {
                     System.out.printf(format, col);
                 }
                 System.out.print("\n");
             }
+        }
+    }
+
+    /**
+     * Print out a bar graph section with the label
+     *
+     * @param message the message label
+     * @param width the width of the columns
+     * @param percentage the percentage of the bar
+     */
+    public void printBar(String message, int width, double percentage) {
+        this.printFormatted(width, true,
+                message + ":, " + printableStatus(percentage, BASE_VALUE));
+    }
+
+    /**
+     * Print out a list of bars
+     *
+     * @param messages the list of messages
+     * @param percentages the list of percentages
+     */
+    public void printAllBars(List<String> messages, List<Double> percentages) {
+        int maxWidth = 0;
+        for (String message : messages) {
+            if (message.length() > maxWidth) {
+                maxWidth = message.length();
+            }
+        }
+        maxWidth += MESSAGE_PADDING;
+
+        for (int i = 0; i < messages.size() && i < percentages.size(); i++) {
+            this.printBar(messages.get(i), maxWidth, percentages.get(i));
         }
     }
 
@@ -142,6 +200,42 @@ public class InputLayer {
             }
         }
         return "";
+    }
+
+    /**
+     * Get the status bar for a given value
+     *
+     * @param value the double value
+     * @return the string value
+     */
+    public static String printableStatus(double value, double baseValue) {
+        StringBuilder status = new StringBuilder();
+        int bars = (int) Math.floor(STATUS_SIZE * (value / baseValue));
+
+        for (int i = 0; i < STATUS_SIZE; i++) {
+            if (i < bars) {
+                status.append("█");
+            } else {
+                status.append("░");
+            }
+        }
+
+        String percentage = printableDouble((value * CONVERT_TO_PERCENT) / baseValue);
+        percentage = percentage.substring(0, percentage.indexOf(".")) + "%";
+        status.append(" ");
+        status.append(percentage);
+
+        return status.toString();
+    }
+
+    /**
+     * Get a truncated double
+     *
+     * @param value the double value
+     * @return the string value
+     */
+    public static String printableDouble(double value) {
+        return String.format("%.2f", value);
     }
 
     /**

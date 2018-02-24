@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 public abstract class Simulation {
 
-    public Command[] commands;
     public InputLayer io;
     public boolean isRunning;
 
