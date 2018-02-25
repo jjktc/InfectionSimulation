@@ -117,6 +117,7 @@ public abstract class Country {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -132,6 +133,7 @@ public abstract class Country {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -147,8 +149,10 @@ public abstract class Country {
     /**
      * Advance the Country Epoch. Should result in spreading the infection both internally
      * and potentially externally
+     *
+     * @param symptoms the list of Symptom objects to apply to infectivity
      */
-    public abstract void nextEpoch();
+    public abstract void nextEpoch(List<Symptom> symptoms);
 
     /**
      * Start the infection by infecting a single member of the population

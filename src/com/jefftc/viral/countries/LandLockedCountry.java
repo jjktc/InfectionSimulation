@@ -1,6 +1,9 @@
 package com.jefftc.viral.countries;
 
 import com.jefftc.viral.mechanics.Country;
+import com.jefftc.viral.mechanics.Symptom;
+
+import java.util.List;
 
 /**
  * A LandLockedCountry is a type of Country that can only transmit the infection over land
@@ -20,7 +23,7 @@ public class LandLockedCountry extends Country {
      * @param population      the total population size (in millions)
      * @param heat            the heat (out of 1.0)
      * @param dampness        the dampness (out of 1.0)
-     * @param wealth                 the wealth (out of 1.0)
+     * @param wealth          the wealth (out of 1.0)
      */
     public LandLockedCountry(String name, String[] connectionNames, double population, double heat,
                              double dampness, double wealth) {
@@ -30,9 +33,11 @@ public class LandLockedCountry extends Country {
     /**
      * Advance the Country Epoch. Should result in spreading the infection both internally
      * and potentially externally
+     *
+     * @param symptoms the list of Symptom objects to apply to infectivity
      */
     @Override
-    public void nextEpoch() {
+    public void nextEpoch(List<Symptom> symptoms) {
         if (this.infectedPopulation > 0) {
             this.spreadInternally();
 

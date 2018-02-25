@@ -1,8 +1,10 @@
 package com.jefftc.viral;
 
+import com.jefftc.engine.Command;
 import com.jefftc.engine.InputLayer;
 import com.jefftc.engine.Simulation;
 import com.jefftc.viral.mechanics.Country;
+import com.jefftc.viral.mechanics.Symptom;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,10 @@ import java.util.List;
  */
 public class ViralSimulation extends Simulation {
 
-    public int weeks = 0;
+    private static final int INFO_COL_WIDTH = 12;
+
+    private int weeks = 0;
+    private List<Symptom> symptoms = new ArrayList<>();
 
     /**
      * Create a Simulation with a given InputLayer
@@ -30,8 +35,8 @@ public class ViralSimulation extends Simulation {
      */
     @Override
     public void init() {
-        ViralSimulationData.init();
         this.io.init(ViralSimulationData.COMMANDS);
+        ViralSimulationData.init();
         this.isRunning = true;
 
         this.io.println("What country would you like to start in?");
@@ -41,16 +46,66 @@ public class ViralSimulation extends Simulation {
 
         int startingCountryIndex = this.io.expectInt(0, ViralSimulationData.COUNTRIES.length);
         ViralSimulationData.COUNTRIES[startingCountryIndex].startInfection();
-        this.io.println("Infection outbreak in " +
+        this.io.println("Infection originates in " +
                 ViralSimulationData.COUNTRIES[startingCountryIndex].getName());
+        System.out.println();
+
+        this.io.println("What symptoms would you like to start with?");
+        for (Symptom symptom : ViralSimulationData.SYMPTOMS) {
+            if (this.useSymptom(symptom)) {
+                this.symptoms.add(symptom);
+            }
+        }
+
+        this.io.println("Simulation is now beginning (hit ENTER to advance one week)");
     }
 
     /**
-     * Process the user input at the beginning of each run
+     * Ask if the user would like to start their infection with the given Symptom
+     *
+     * @param symptom the Symptom to ask about
+     * @return if the user wants to use it
+     */
+    private boolean useSymptom(Symptom symptom) {
+        this.io.println("Would you like to start with the symptom: " + symptom.getName());
+        return this.io.expectBoolean();
+    }
+
+    /**
+     * Process the user input at the beginning of each run.
+     * In Viral Simulation, all the user input is at the beginning, the user can now merely check
+     * on status
      */
     @Override
     public void processInput() {
-        this.io.receiveInput();
+        String fullInput = this.io.receiveInput();
+        Command command = this.io.detectCommand(fullInput);
+
+        if (command != null) {
+            String body = command.getBody(fullInput);
+
+            switch (command.getCommand()) {
+                case "quit":
+                    // Close the entire Simulation
+                    System.exit(0);
+                    break;
+
+                case "info":
+                    // Print out info on the specified Country given in body
+                    Country country = ViralSimulationData.findCountry(body);
+                    if (country != null) {
+                        this.io.println("Information for " + country.getName());
+                        this.io.printFormatted(INFO_COL_WIDTH, true,
+                                "Population:, " + country.getPopulation());
+                        this.io.printFormatted(INFO_COL_WIDTH, true,
+                                "Infected:, " + country.getInfectedPopulation());
+                    } else {
+                        this.io.println("Could not find a Country with the given name");
+                    }
+                    System.out.println();
+                    break;
+            }
+        }
     }
 
     /**
@@ -64,7 +119,7 @@ public class ViralSimulation extends Simulation {
 
         for (Country country : ViralSimulationData.COUNTRIES) {
             // Advance the time for each country
-            country.nextEpoch();
+            country.nextEpoch(this.symptoms);
 
             if (!country.isCompletelyInfected()) {
                 healthyPeople = true;

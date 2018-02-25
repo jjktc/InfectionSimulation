@@ -1,6 +1,9 @@
 package com.jefftc.viral.countries;
 
 import com.jefftc.viral.mechanics.Country;
+import com.jefftc.viral.mechanics.Symptom;
+
+import java.util.List;
 
 /**
  * CoastalCountry is a type of Country that can pass the infection over air or water as well as land
@@ -26,9 +29,11 @@ public class CoastalCountry extends Country {
     /**
      * Advance the Country Epoch. Should result in spreading the infection both internally
      * and potentially externally
+     *
+     * @param symptoms the list of Symptom objects to apply to infectivity
      */
     @Override
-    public void nextEpoch() {
+    public void nextEpoch(List<Symptom> symptoms) {
         if (this.infectedPopulation > 0) {
             this.spreadInternally();
 

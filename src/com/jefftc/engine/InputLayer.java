@@ -42,9 +42,9 @@ public class InputLayer {
     }
 
     /**
-     * Initialize the InputLayer with an array of Commands
+     * Initialize the InputLayer with an array of Command objects
      *
-     * @param commands the array of Command
+     * @param commands the Command objects
      */
     public void init(Command[] commands) {
         this.commands = commands;
@@ -78,6 +78,46 @@ public class InputLayer {
     }
 
     /**
+     * Detect a command stem from an entire input
+     *
+     * @param input the entire input
+     * @return the command
+     */
+    public Command detectCommand(String input) {
+        String cleanInput = input.trim().replaceAll(" +", " ").toLowerCase();
+        for (Command cmd : this.commands) {
+            if (cmd.matchFormat(cleanInput)) {
+                return cmd;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Requests the user for a true or false answer
+     *
+     * @return if the user said yes or no
+     */
+    public boolean expectBoolean() {
+        String response = this.receiveInput().toLowerCase();
+        if (response.equals("true") || response.equals("t")
+                || response.equals("yes") || response.equals("y")) {
+            // True aka Yes
+            return true;
+        } else if (response.equals("false") || response.equals("f")
+                || response.equals("no") || response.equals("n")) {
+            // False aka No
+            return false;
+        } else if (response.equals("quit")) {
+            // Quit the program
+            System.exit(0);
+        }
+
+        this.println("You must supply a yes or no answer, please try again");
+        return this.expectBoolean();
+    }
+
+    /**
      * Request the user for an integer in an inclusive range
      *
      * @param min the minimum acceptable value
@@ -86,6 +126,10 @@ public class InputLayer {
      */
     public int expectInt(int min, int max) {
         String response = this.receiveInput();
+        if (response.equalsIgnoreCase("quit")) {
+            System.exit(0);
+        }
+
         try {
             int value = Integer.parseInt(response);
             if (value >= min && value <= max) {
@@ -161,7 +205,7 @@ public class InputLayer {
      * @param width the width of the columns
      * @param percentage the percentage of the bar
      */
-    public void printBar(String message, int width, double percentage) {
+    private void printBar(String message, int width, double percentage) {
         this.printFormatted(width, true,
                 message + ":, " + printableStatus(percentage, BASE_VALUE));
     }
@@ -187,28 +231,12 @@ public class InputLayer {
     }
 
     /**
-     * Detect a command stem from an entire input
-     *
-     * @param input the entire input
-     * @return the command stem
-     */
-    public String detectCommand(String input) {
-        String cleanInput = input.trim().replaceAll(" +", " ").toLowerCase();
-        for (Command cmd : this.commands) {
-            if (cmd.matchFormat(cleanInput)) {
-                return cmd.getCommand();
-            }
-        }
-        return "";
-    }
-
-    /**
      * Get the status bar for a given value
      *
      * @param value the double value
      * @return the string value
      */
-    public static String printableStatus(double value, double baseValue) {
+    private static String printableStatus(double value, double baseValue) {
         StringBuilder status = new StringBuilder();
         int bars = (int) Math.floor(STATUS_SIZE * (value / baseValue));
 
@@ -234,7 +262,7 @@ public class InputLayer {
      * @param value the double value
      * @return the string value
      */
-    public static String printableDouble(double value) {
+    private static String printableDouble(double value) {
         return String.format("%.2f", value);
     }
 
