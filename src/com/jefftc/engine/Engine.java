@@ -22,6 +22,7 @@ public class Engine {
             simulation.run();
             simulation.print();
         }
+        simulation.printEnding();
     }
 
 }

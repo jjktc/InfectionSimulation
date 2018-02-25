@@ -3,6 +3,7 @@ package com.jefftc.viral.mechanics;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A Country is an abstract base class that determines how the infection spreads with different
@@ -11,36 +12,71 @@ import java.util.List;
 public abstract class Country {
 
     protected static final int INITIAL_INFECTION_COUNT = 1;
-    protected static final double HEAT_INFECTIOUSNESS = 0.01;
-    protected static final double DAMPNESS_INFECTIOUSNESS = 0.025;
+    private static final int MILLION = 1000000;
 
-    private String name;
-    private int population;
-    private int infectedPopulation;
-    private double infectedPercentage;
-    private double heat;
-    private double dampness;
+    /**
+     * Heat and dampness increase the chance of disease spread
+     * Wealth decreases the chance of disease spread
+     */
+    private static final double HEAT_INFECTIOUSNESS = 0.1;
+    private static final double DAMPNESS_INFECTIOUSNESS = 0.2;
+    private static final double WEALTH_INFECTIOUSNESS = 0.3;
+    protected static final double MINIMUM_INFECTION_MULTIPLIER = 0.005;
 
-    private double internalSpreadChance;
+    /**
+     * Thresholds before disease can jump borders
+     */
+    protected static final double NON_LAND_THRESHOLD = 0.33;
+    protected static final double LAND_THRESHOLD = 0.2;
 
-    private String[] connectionNames;
-    private List<Country> connections = new ArrayList<>();
+    /**
+     * Deduction (multiplicative) on crossing borders if borders are closed
+     */
+    protected static final double BORDER_CLOSED_SPREAD_DEDUCTION = 0.25;
+
+    protected static final Random RANDOM = new Random();
+
+    protected String name;
+    protected int population;
+    protected int infectedPopulation;
+    protected double infectedPercentage;
+    protected double heat;
+    protected double dampness;
+    protected double wealth;
+
+    protected double internalSpreadMultiplier;
+    protected double externalSpreadMultiplier;
+    protected double internalSpreadChance;
+    protected double externalSpreadChance;
+
+    protected String[] landConnectionNames;
+    protected String[] nonLandConnectionNames;
+    protected List<Country> landConnections = new ArrayList<>();
+    protected List<Country> nonLandConnections = new ArrayList<>();
+
+    protected boolean landBordersOpen = true;
+    protected boolean nonLandBordersOpen = true;
 
     /**
      * Create a Country with a given name, population size, heat, dampness, and array of connections
      *
-     * @param name the name of the Country
-     * @param connectionNames the array of connected Country objects
-     * @param population the total population size
-     * @param heat the heat (out of 1.0)
-     * @param dampness the dampness (out of 1.0)
+     * @param name                   the name of the Country
+     * @param landConnectionNames    the array of connected Country objects via land
+     * @param nonLandConnectionNames the array of connected Country objects via non-land
+     * @param population             the total population size (in millions)
+     * @param heat                   the heat (out of 1.0)
+     * @param dampness               the dampness (out of 1.0)
+     * @param wealth                 the wealth (out of 1.0)
      */
-    public Country(String name, String[] connectionNames, int population, double heat, double dampness) {
+    public Country(String name, String[] landConnectionNames, String[] nonLandConnectionNames,
+                   double population, double heat, double dampness, double wealth) {
         this.name = name;
-        this.connectionNames = connectionNames;
-        this.population = population;
+        this.landConnectionNames = landConnectionNames;
+        this.nonLandConnectionNames = nonLandConnectionNames;
+        this.population = (int) (population * MILLION);
         this.heat = heat;
         this.dampness = dampness;
+        this.wealth = wealth;
     }
 
     /**
@@ -49,22 +85,34 @@ public abstract class Country {
      * @param allCountries the map of all the Country objects
      */
     public void init(HashMap<String, Country> allCountries) {
-        for (String name : this.connectionNames) {
+        for (String name : this.landConnectionNames) {
             if (allCountries.containsKey(name)) {
-                this.connections.add(allCountries.get(name));
+                this.landConnections.add(allCountries.get(name));
             }
         }
-        this.internalSpreadChance = (heat * HEAT_INFECTIOUSNESS + dampness * DAMPNESS_INFECTIOUSNESS);
+
+        for (String name : this.nonLandConnectionNames) {
+            if (allCountries.containsKey(name)) {
+                this.nonLandConnections.add(allCountries.get(name));
+            }
+        }
+
+        this.internalSpreadMultiplier = (
+                heat * HEAT_INFECTIOUSNESS
+                        + dampness * DAMPNESS_INFECTIOUSNESS
+                        + (1.0 - this.wealth) * WEALTH_INFECTIOUSNESS)
+                / LAND_THRESHOLD;
+        this.externalSpreadMultiplier = this.internalSpreadMultiplier * NON_LAND_THRESHOLD;
     }
 
     /**
-     * Check if two Country objects are connected
+     * Check if two Country objects are connected by land transport
      *
      * @param target the target Country
      * @return if the countries are connected
      */
-    public boolean isConnected(Country target) {
-        for (Country connection : this.connections) {
+    public boolean isConnectedByLand(Country target) {
+        for (Country connection : this.landConnections) {
             if (connection.getName().equals(target.getName())) {
                 return true;
             }
@@ -73,17 +121,27 @@ public abstract class Country {
     }
 
     /**
-     * Increase the number of people infected
+     * Check if two Country objects are connected by other than land transport
      *
-     * @param amount the amount to increase by
+     * @param target the target Country
+     * @return if the countries are connected
      */
-    public void increaseInfectedPopulation(int amount) {
-        int increaseAmount = amount;
-        if (amount == 0) {
-            increaseAmount++;
+    public boolean isConnectedByNonLand(Country target) {
+        for (Country connection : this.nonLandConnections) {
+            if (connection.getName().equals(target.getName())) {
+                return true;
+            }
         }
-        this.infectedPopulation += increaseAmount;
-        this.setInfectedPopulation(this.infectedPopulation + increaseAmount);
+        return false;
+    }
+
+    /**
+     * Check if the Country is 100% infected
+     *
+     * @return if the Country is infected entirely
+     */
+    public boolean isCompletelyInfected() {
+        return this.infectedPopulation == this.population;
     }
 
     /**
@@ -109,22 +167,19 @@ public abstract class Country {
      */
     public abstract void spreadInternally();
 
+    /**
+     * Closes the borders, decreasing chance of spread, controllable by player
+     */
+    public abstract void closeBorders();
+
     /* GETTERS AND SETTERS */
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getPopulation() {
         return population;
-    }
-
-    public void setPopulation(int population) {
-        this.population = population;
     }
 
     public int getInfectedPopulation() {
@@ -137,53 +192,12 @@ public abstract class Country {
             this.infectedPopulation = this.population;
         }
         this.infectedPercentage = ((double) this.infectedPopulation / (double) this.population);
+        this.internalSpreadChance = this.internalSpreadMultiplier * (this.infectedPercentage);
+        this.externalSpreadChance = this.externalSpreadMultiplier * (this.infectedPercentage);
     }
 
     public double getInfectedPercentage() {
         return infectedPercentage;
     }
 
-    public void setInfectedPercentage(double infectedPercentage) {
-        this.infectedPercentage = infectedPercentage;
-    }
-
-    public double getHeat() {
-        return heat;
-    }
-
-    public void setHeat(double heat) {
-        this.heat = heat;
-    }
-
-    public double getDampness() {
-        return dampness;
-    }
-
-    public void setDampness(double dampness) {
-        this.dampness = dampness;
-    }
-
-    public String[] getConnectionNames() {
-        return connectionNames;
-    }
-
-    public void setConnectionNames(String[] connectionNames) {
-        this.connectionNames = connectionNames;
-    }
-
-    public List<Country> getConnections() {
-        return connections;
-    }
-
-    public void setConnections(List<Country> connections) {
-        this.connections = connections;
-    }
-
-    public double getInternalSpreadChance() {
-        return internalSpreadChance;
-    }
-
-    public void setInternalSpreadChance(double internalSpreadChance) {
-        this.internalSpreadChance = internalSpreadChance;
-    }
 }

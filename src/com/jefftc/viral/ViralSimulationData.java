@@ -22,9 +22,13 @@ public class ViralSimulationData {
                     new String[]{
                             "United States of America",
                     },
-                    36000000,
-                    0.4,
-                    0.3
+                    new String[]{
+
+                    },
+                    36.0,
+                    0.25,
+                    0.3,
+                    0.8
             ),
             new CoastalCountry(
                     "United States of America",
@@ -32,18 +36,26 @@ public class ViralSimulationData {
                             "Canada",
                             "Mexico"
                     },
-                    323000000,
+                    new String[]{
+
+                    },
+                    323.0,
                     0.75,
-                    0.75
+                    0.75,
+                    0.9
             ),
             new CoastalCountry(
                     "Mexico",
                     new String[]{
                             "United States of America",
                     },
-                    128000000,
+                    new String[]{
+
+                    },
+                    128.0,
                     0.85,
-                    0.6
+                    0.4,
+                    0.4
             )
     };
 

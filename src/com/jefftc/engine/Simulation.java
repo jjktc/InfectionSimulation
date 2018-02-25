@@ -1,7 +1,5 @@
 package com.jefftc.engine;
 
-import java.util.HashMap;
-
 public abstract class Simulation {
 
     public InputLayer io;
@@ -35,5 +33,10 @@ public abstract class Simulation {
      * Print out the information at the end of an epoch
      */
     public abstract void print();
+
+    /**
+     * Print out the final simulation message
+     */
+    public abstract void printEnding();
 
 }

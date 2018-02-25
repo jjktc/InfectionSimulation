@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class ViralSimulation extends Simulation {
 
+    public int weeks = 0;
+
     /**
      * Create a Simulation with a given InputLayer
      *
@@ -56,8 +58,22 @@ public class ViralSimulation extends Simulation {
      */
     @Override
     public void run() {
+        this.weeks++;
+        this.io.println("Week #" + this.weeks);
+        boolean healthyPeople = false;
+
         for (Country country : ViralSimulationData.COUNTRIES) {
+            // Advance the time for each country
             country.nextEpoch();
+
+            if (!country.isCompletelyInfected()) {
+                healthyPeople = true;
+            }
+        }
+
+        if (!healthyPeople) {
+            // Simulation is over
+            this.isRunning = false;
         }
     }
 
@@ -68,12 +84,31 @@ public class ViralSimulation extends Simulation {
     public void print() {
         List<String> infectedNames = new ArrayList<>();
         List<Double> infectedPercentages = new ArrayList<>();
+        int totalInfectedPopulation = 0;
+        int totalWorldPopulation = 0;
+
         for (Country country : ViralSimulationData.COUNTRIES) {
+            totalInfectedPopulation += country.getInfectedPopulation();
+            totalWorldPopulation += country.getPopulation();
+
             if (country.getInfectedPopulation() > 0) {
+                // Only print out bars for healthy countries
                 infectedNames.add(country.getName());
                 infectedPercentages.add(country.getInfectedPercentage());
             }
         }
+
+        infectedNames.add("TOTAL");
+        infectedPercentages.add((double) totalInfectedPopulation / (double) totalWorldPopulation);
+
         this.io.printAllBars(infectedNames, infectedPercentages);
+    }
+
+    /**
+     * Print out the final simulation message
+     */
+    @Override
+    public void printEnding() {
+        this.io.println("After " + this.weeks + " weeks, every person on Earth has been infected.");
     }
 }
