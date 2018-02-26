@@ -85,9 +85,11 @@ public class CoastalCountry extends Country {
 
     /**
      * Spread the infection internally
+     *
+     * @param symptoms the list of symptoms
      */
     @Override
-    public void spreadInternally() {
+    public void spreadInternally(List<Symptom> symptoms) {
         double infectedIncrease = (this.population - this.infectedPopulation)
                 * this.internalSpreadChance;
         double minimumIncrease = MINIMUM_INFECTION_MULTIPLIER * this.getPopulation();

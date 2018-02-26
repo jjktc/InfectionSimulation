@@ -100,8 +100,8 @@ public abstract class Country {
         this.internalSpreadMultiplier = (
                 heat * HEAT_INFECTIOUSNESS
                         + dampness * DAMPNESS_INFECTIOUSNESS
-                        + (1.0 - this.wealth) * WEALTH_INFECTIOUSNESS)
-                / LAND_THRESHOLD;
+                        + (1.0 - this.wealth) * WEALTH_INFECTIOUSNESS);
+        this.internalSpreadMultiplier /= LAND_THRESHOLD;
         this.externalSpreadMultiplier = this.internalSpreadMultiplier * NON_LAND_THRESHOLD;
     }
 
@@ -168,8 +168,10 @@ public abstract class Country {
 
     /**
      * Spread the infection internally
+     *
+     * @param symptoms the list of symptoms
      */
-    public abstract void spreadInternally();
+    public abstract void spreadInternally(List<Symptom> symptoms);
 
     /**
      * Closes the borders, decreasing chance of spread, controllable by player

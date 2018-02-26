@@ -39,7 +39,7 @@ public class LandLockedCountry extends Country {
     @Override
     public void nextEpoch(List<Symptom> symptoms) {
         if (this.infectedPopulation > 0) {
-            this.spreadInternally();
+            this.spreadInternally(symptoms);
 
             if (this.landConnections.size() > 0) {
                 if (this.infectedPercentage > LAND_THRESHOLD * LAND_LOCKED_PENALTY) {
@@ -78,9 +78,11 @@ public class LandLockedCountry extends Country {
 
     /**
      * Spread the infection internally
+     *
+     * @param symptoms the list of symptoms
      */
     @Override
-    public void spreadInternally() {
+    public void spreadInternally(List<Symptom> symptoms) {
         double infectedIncrease = (this.population - this.infectedPopulation)
                 * this.internalSpreadChance;
         double minimumIncrease = MINIMUM_INFECTION_MULTIPLIER * this.getPopulation()
