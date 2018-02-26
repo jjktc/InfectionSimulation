@@ -1,5 +1,7 @@
 package com.jefftc.viral.mechanics;
 
+import com.jefftc.viral.ViralSimulation;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,23 +20,20 @@ public abstract class Country {
      * Heat and dampness increase the chance of disease spread
      * Wealth decreases the chance of disease spread
      */
-    private static final double HEAT_INFECTIOUSNESS = 0.1;
+    private static final double HEAT_INFECTIOUSNESS = 0.5;
     private static final double DAMPNESS_INFECTIOUSNESS = 0.2;
-    private static final double WEALTH_INFECTIOUSNESS = 0.3;
+    private static final double WEALTH_INFECTIOUSNESS = 0.7;
     protected static final double MINIMUM_INFECTION_MULTIPLIER = 0.005;
 
     /**
      * Thresholds before disease can jump borders
      */
-    protected static final double NON_LAND_THRESHOLD = 0.33;
+    protected static final double NON_LAND_THRESHOLD = 0.4;
     protected static final double LAND_THRESHOLD = 0.2;
 
-    /**
-     * Deduction (multiplicative) on crossing borders if borders are closed
-     */
-    protected static final double BORDER_CLOSED_SPREAD_DEDUCTION = 0.25;
-
     protected static final Random RANDOM = new Random();
+
+    protected ViralSimulation simulation;
 
     protected String name;
     protected int population;
@@ -83,8 +82,11 @@ public abstract class Country {
      * Initialize the Country properties
      *
      * @param allCountries the map of all the Country objects
+     * @param simulation the simulation object
      */
-    public void init(HashMap<String, Country> allCountries) {
+    public void init(HashMap<String, Country> allCountries, ViralSimulation simulation) {
+        this.simulation = simulation;
+
         for (String name : this.landConnectionNames) {
             if (allCountries.containsKey(name)) {
                 this.landConnections.add(allCountries.get(name));
@@ -101,8 +103,8 @@ public abstract class Country {
                 heat * HEAT_INFECTIOUSNESS
                         + dampness * DAMPNESS_INFECTIOUSNESS
                         + (1.0 - this.wealth) * WEALTH_INFECTIOUSNESS);
+        this.externalSpreadMultiplier = this.internalSpreadMultiplier;
         this.internalSpreadMultiplier /= LAND_THRESHOLD;
-        this.externalSpreadMultiplier = this.internalSpreadMultiplier * NON_LAND_THRESHOLD;
     }
 
     /**
@@ -111,7 +113,7 @@ public abstract class Country {
      * @param target the target Country
      * @return if the countries are connected
      */
-    public boolean isConnectedByLand(Country target) {
+    protected boolean isConnectedByLand(Country target) {
         for (Country connection : this.landConnections) {
             if (connection.getName().equals(target.getName())) {
                 return true;
@@ -127,9 +129,31 @@ public abstract class Country {
      * @param target the target Country
      * @return if the countries are connected
      */
-    public boolean isConnectedByNonLand(Country target) {
+    protected boolean isConnectedByNonLand(Country target) {
         for (Country connection : this.nonLandConnections) {
             if (connection.getName().equals(target.getName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get if the Country is connected to an infected country with a percentage over the threshold
+     *
+     * @param threshold the point to determine if it is infected
+     * @return if there is an infected connection
+     */
+    protected boolean isConnectedToInfectedCountry(double threshold) {
+        for (Country connection : this.landConnections) {
+            if (connection.infectedPercentage > threshold) {
+                return true;
+            }
+        }
+
+        for (Country connection : this.nonLandConnections) {
+            if (connection.infectedPercentage > threshold) {
                 return true;
             }
         }
@@ -174,7 +198,8 @@ public abstract class Country {
     public abstract void spreadInternally(List<Symptom> symptoms);
 
     /**
-     * Closes the borders, decreasing chance of spread, controllable by player
+     * Closes the borders, decreasing chance of spread, controllable by player. Country objects
+     * will automatically do this if their neighboring countries become infected
      */
     public abstract void closeBorders();
 
@@ -204,6 +229,10 @@ public abstract class Country {
 
     public double getInfectedPercentage() {
         return infectedPercentage;
+    }
+
+    public boolean isBorderOpen() {
+        return landBordersOpen || nonLandBordersOpen;
     }
 
 }

@@ -22,6 +22,11 @@ public class ViralSimulation extends Simulation {
 
     private int weeks = 0;
     private List<Symptom> symptoms = new ArrayList<>();
+    private double totalWorldPopulation = 0.0;
+    private double totalInfectedPopulation = 0.0;
+    private double totalInfectedPercentage = 0.0;
+
+    private boolean detected = false;
 
     /**
      * Create a Simulation with a given InputLayer
@@ -38,11 +43,12 @@ public class ViralSimulation extends Simulation {
     @Override
     public void init() {
         this.io.init(ViralSimulationData.COMMANDS);
-        ViralSimulationData.init();
+        ViralSimulationData.init(this);
         this.isRunning = true;
 
         this.io.println("What country would you like to start in?");
         for (int i = 0; i < ViralSimulationCountries.COUNTRIES.length; i++) {
+            this.totalWorldPopulation += ViralSimulationCountries.COUNTRIES[i].getPopulation();
             this.io.printlnIndented(i + "\t: " + ViralSimulationCountries.COUNTRIES[i].getName());
         }
 
@@ -141,26 +147,30 @@ public class ViralSimulation extends Simulation {
     public void print() {
         List<String> infectedNames = new ArrayList<>();
         List<Double> infectedPercentages = new ArrayList<>();
-        double totalInfectedPopulation = 0;
-        double totalWorldPopulation = 0;
+        double totalInfectedPopulation = 0.0;
 
         Arrays.sort(ViralSimulationCountries.COUNTRIES,
                 Comparator.comparing(Country::getInfectedPercentage).reversed());
 
         for (Country country : ViralSimulationCountries.COUNTRIES) {
             totalInfectedPopulation += country.getInfectedPopulation();
-            totalWorldPopulation += country.getPopulation();
 
             if (country.getInfectedPopulation() > 0) {
                 // Only print out bars for healthy countries
-                infectedNames.add(country.getName());
+                String countryTag = country.getName();
+                if (!country.isBorderOpen()) {
+                    countryTag += " [ CLOSED ]";
+                }
+                infectedNames.add(countryTag);
                 infectedPercentages.add(country.getInfectedPercentage());
             }
         }
 
-        infectedNames.add("TOTAL");
-        infectedPercentages.add(totalInfectedPopulation / totalWorldPopulation);
+        this.totalInfectedPopulation = totalInfectedPopulation;
+        this.totalInfectedPercentage = this.totalInfectedPopulation / this.totalWorldPopulation;
 
+        infectedNames.add("TOTAL");
+        infectedPercentages.add(this.totalInfectedPercentage);
         this.io.printAllBars(infectedNames, infectedPercentages);
     }
 
@@ -170,5 +180,9 @@ public class ViralSimulation extends Simulation {
     @Override
     public void printEnding() {
         this.io.println("After " + this.weeks + " weeks, every person on Earth has been infected.");
+    }
+
+    public double getTotalInfectedPercentage() {
+        return this.totalInfectedPercentage;
     }
 }

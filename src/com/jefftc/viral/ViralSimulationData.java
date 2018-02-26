@@ -11,7 +11,13 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
+/**
+ * Class containing all the public data for Viral Simulations
+ */
 public class ViralSimulationData {
+
+    public static final int CMD_QUIT = 0;
+    public static final int CMD_INFO = 1;
 
     /**
      * Array of Command objects available to the user
@@ -36,8 +42,10 @@ public class ViralSimulationData {
 
     /**
      * Initialize the data for ViralSimulation
+     *
+     * @param simulation the simulation object
      */
-    public static void init() {
+    public static void init(ViralSimulation  simulation) {
         Arrays.sort(ViralSimulationCountries.COUNTRIES, Comparator.comparing(Country::getName));
         HashMap<String, Country> countryMap = new HashMap<>();
 
@@ -46,7 +54,7 @@ public class ViralSimulationData {
         }
 
         for (Country country : ViralSimulationCountries.COUNTRIES) {
-            country.init(countryMap);
+            country.init(countryMap, simulation);
         }
     }
 

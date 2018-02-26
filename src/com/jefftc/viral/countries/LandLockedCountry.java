@@ -16,6 +16,11 @@ public class LandLockedCountry extends Country {
     private static final double LAND_LOCKED_PENALTY = 0.5;
 
     /**
+     * The threshold of a connected Country that triggers a border close
+     */
+    private static final double BORDER_CLOSE_THRESHOLD = 0.75;
+
+    /**
      * Create a Country with a given name, population size, heat, dampness, and array of connections
      *
      * @param name            the name of the Country
@@ -52,6 +57,8 @@ public class LandLockedCountry extends Country {
                 }
             }
         }
+
+        this.closeBorders();
     }
 
     /**
@@ -95,11 +102,18 @@ public class LandLockedCountry extends Country {
     }
 
     /**
-     * Closes the land borders, decreasing chance of spread, controllable by player
+     * Closes the land borders, decreasing chance of spread, controllable by player.
+     * Land Locked Countries are less likely to close the border until threat is higher.
+     * Wealthier countries close borders earlier
      */
     @Override
     public void closeBorders() {
-
+        if (this.landBordersOpen) {
+            boolean imminentThreat =
+                    this.isConnectedToInfectedCountry(BORDER_CLOSE_THRESHOLD / this.wealth);
+            this.landBordersOpen = imminentThreat;
+            this.nonLandBordersOpen = imminentThreat;
+        }
     }
 
 }
