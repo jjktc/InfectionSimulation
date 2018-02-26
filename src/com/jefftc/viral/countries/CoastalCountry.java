@@ -35,7 +35,7 @@ public class CoastalCountry extends Country {
     @Override
     public void nextEpoch(List<Symptom> symptoms) {
         if (this.infectedPopulation > 0) {
-            this.spreadInternally();
+            this.spreadInternally(symptoms);
 
             if (this.nonLandConnections.size() > 0) {
                 if (this.infectedPercentage > NON_LAND_THRESHOLD) {

@@ -7,6 +7,8 @@ import com.jefftc.viral.mechanics.Country;
 import com.jefftc.viral.mechanics.Symptom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -40,14 +42,14 @@ public class ViralSimulation extends Simulation {
         this.isRunning = true;
 
         this.io.println("What country would you like to start in?");
-        for (int i = 0; i < ViralSimulationData.COUNTRIES.length; i++) {
-            this.io.printlnIndented(i + "\t: " + ViralSimulationData.COUNTRIES[i].getName());
+        for (int i = 0; i < ViralSimulationCountries.COUNTRIES.length; i++) {
+            this.io.printlnIndented(i + "\t: " + ViralSimulationCountries.COUNTRIES[i].getName());
         }
 
-        int startingCountryIndex = this.io.expectInt(0, ViralSimulationData.COUNTRIES.length);
-        ViralSimulationData.COUNTRIES[startingCountryIndex].startInfection();
+        int startingCountryIndex = this.io.expectInt(0, ViralSimulationCountries.COUNTRIES.length);
+        ViralSimulationCountries.COUNTRIES[startingCountryIndex].startInfection();
         this.io.println("Infection originates in " +
-                ViralSimulationData.COUNTRIES[startingCountryIndex].getName());
+                ViralSimulationCountries.COUNTRIES[startingCountryIndex].getName());
         System.out.println();
 
         this.io.println("What symptoms would you like to start with?");
@@ -117,7 +119,7 @@ public class ViralSimulation extends Simulation {
         this.io.println("Week #" + this.weeks);
         boolean healthyPeople = false;
 
-        for (Country country : ViralSimulationData.COUNTRIES) {
+        for (Country country : ViralSimulationCountries.COUNTRIES) {
             // Advance the time for each country
             country.nextEpoch(this.symptoms);
 
@@ -139,10 +141,13 @@ public class ViralSimulation extends Simulation {
     public void print() {
         List<String> infectedNames = new ArrayList<>();
         List<Double> infectedPercentages = new ArrayList<>();
-        int totalInfectedPopulation = 0;
-        int totalWorldPopulation = 0;
+        double totalInfectedPopulation = 0;
+        double totalWorldPopulation = 0;
 
-        for (Country country : ViralSimulationData.COUNTRIES) {
+        Arrays.sort(ViralSimulationCountries.COUNTRIES,
+                Comparator.comparing(Country::getInfectedPercentage).reversed());
+
+        for (Country country : ViralSimulationCountries.COUNTRIES) {
             totalInfectedPopulation += country.getInfectedPopulation();
             totalWorldPopulation += country.getPopulation();
 
@@ -154,7 +159,7 @@ public class ViralSimulation extends Simulation {
         }
 
         infectedNames.add("TOTAL");
-        infectedPercentages.add((double) totalInfectedPopulation / (double) totalWorldPopulation);
+        infectedPercentages.add(totalInfectedPopulation / totalWorldPopulation);
 
         this.io.printAllBars(infectedNames, infectedPercentages);
     }
