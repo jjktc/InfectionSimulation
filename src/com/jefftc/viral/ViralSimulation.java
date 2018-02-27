@@ -3,13 +3,11 @@ package com.jefftc.viral;
 import com.jefftc.engine.Command;
 import com.jefftc.engine.InputLayer;
 import com.jefftc.engine.Simulation;
+import com.jefftc.viral.mechanics.Continent;
 import com.jefftc.viral.mechanics.Country;
 import com.jefftc.viral.mechanics.Symptom;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Simulation of an infection (inspired by Plague Inc.)
@@ -22,11 +20,14 @@ public class ViralSimulation extends Simulation {
 
     private int weeks = 0;
     private List<Symptom> symptoms = new ArrayList<>();
-    private double totalWorldPopulation = 0.0;
-    private double totalInfectedPercentage = 0.0;
     private boolean receivedCommand = false;
 
+    private double totalWorldPopulation = 0.0;
+    private double totalInfectedPopulation = 0.0;
+    private double totalInfectedPercentage = 0.0;
+
     private double[] continentPopulations = new double[ViralSimulationCountries.TOTAL_CONTINENTS];
+    private double[] continentInfectedPopulations = new double[ViralSimulationCountries.TOTAL_CONTINENTS];
     private double[] continentPercentages = new double[ViralSimulationCountries.TOTAL_CONTINENTS];
 
     /**
@@ -136,21 +137,31 @@ public class ViralSimulation extends Simulation {
 
         this.weeks++;
         this.io.println("Week #" + this.weeks);
-        boolean healthyPeople = false;
 
+        boolean simulationOver = this.advanceSimulation();
+        if (simulationOver) {
+            // Simulation is over
+            this.isRunning = false;
+        }
+    }
+
+    /**
+     * Advance the state of the simulation and check if the simulation is over
+     *
+     * @return if the simulation has completed
+     */
+    private boolean advanceSimulation() {
+        boolean healthyPeople = false;
         for (Country country : ViralSimulationCountries.COUNTRIES) {
             // Advance the time for each country
             country.nextEpoch(this.symptoms);
 
-            if (!country.isCompletelyInfected()) {
+            if (country.hasHealthPeople()) {
                 healthyPeople = true;
             }
         }
 
-        if (!healthyPeople) {
-            // Simulation is over
-            this.isRunning = false;
-        }
+        return !healthyPeople;
     }
 
     /**
@@ -162,38 +173,67 @@ public class ViralSimulation extends Simulation {
             return;
         }
 
+        this.printBars();
+        this.printMap();
+    }
+
+    /**
+     * Print out all the Country / Continent bars
+     */
+    private void printBars() {
+        this.totalInfectedPopulation = 0.0;
+        List<Country> infectedCountries = new ArrayList<>();
         List<String> infectedNames = new ArrayList<>();
         List<Double> infectedPercentages = new ArrayList<>();
-        double totalInfectedPopulation = 0.0;
-        double[] continentInfectedPopulations = new double[ViralSimulationCountries.TOTAL_CONTINENTS];
 
-        Arrays.sort(ViralSimulationCountries.COUNTRIES,
-                Comparator.comparing(Country::getInfectedPercentage).reversed());
+        for (Continent continent : ViralSimulationCountries.continents) {
+            if (continent.isAllInfected()) {
+                // Can treat all Countries in Continent as one unit
+                this.totalInfectedPopulation += continent.getInfectedPopulation();
 
-        for (Country country : ViralSimulationCountries.COUNTRIES) {
-            totalInfectedPopulation += country.getInfectedPopulation();
-            continentInfectedPopulations[country.getContinentCode()] += country.getInfectedPopulation();
-
-            if (country.getInfectedPopulation() > 0) {
-                // Only print out bars for healthy countries
-                String countryTag = country.getName();
-                if (!country.isBorderOpen()) {
-                    countryTag += " [ CLOSED ]";
-                }
-                infectedNames.add(countryTag);
-                infectedPercentages.add(country.getInfectedPercentage());
+                infectedNames.add(continent.getName());
+                infectedPercentages.add(continent.getInfectedPercentage());
+            } else {
+                // Handle all Countries separately
+                infectedCountries.addAll(continent.getInfectedCountries());
             }
         }
 
-        this.totalInfectedPercentage = totalInfectedPopulation / this.totalWorldPopulation;
-        for (int i = 0; i < ViralSimulationCountries.TOTAL_CONTINENTS; i++) {
-            this.continentPercentages[i] = continentInfectedPopulations[i] / this.continentPopulations[i];
+        infectedCountries.sort(Comparator.comparing(Country::getInfectedPercentage).reversed());
+        for (Country country : infectedCountries) {
+            // Print out all individual infected Countries if Continent isn't entirely infected
+            this.totalInfectedPopulation += country.getInfectedPopulation();
+            this.continentInfectedPopulations[country.getContinentCode()] += country.getInfectedPopulation();
+
+            String countryTag = country.getName();
+            if (!country.isBorderOpen()) {
+                countryTag += " [ CLOSED ]";
+            }
+
+            infectedNames.add(countryTag);
+            infectedPercentages.add(country.getInfectedPercentage());
         }
 
+        this.calculatePercentages();
         infectedNames.add("TOTAL");
         infectedPercentages.add(this.totalInfectedPercentage);
         this.io.printAllBars(infectedNames, infectedPercentages);
+    }
 
+    /**
+     * Calculate the infection percentages for the world and by continent
+     */
+    private void calculatePercentages() {
+        this.totalInfectedPercentage = this.totalInfectedPopulation / this.totalWorldPopulation;
+        for (int i = 0; i < ViralSimulationCountries.TOTAL_CONTINENTS; i++) {
+            this.continentPercentages[i] = this.continentInfectedPopulations[i] / this.continentPopulations[i];
+        }
+    }
+
+    /**
+     * Print out a visual map of the world to show spread of infection
+     */
+    private void printMap() {
         List<String> mapLines = MapPrinter.getFilterMap(this.continentPercentages);
         for (String line : mapLines) {
             System.out.println(line);
@@ -208,7 +248,10 @@ public class ViralSimulation extends Simulation {
         this.io.println("After " + this.weeks + " weeks, every person on Earth has been infected.");
     }
 
+    /* GETTERS AND SETTERS */
+
     public double getTotalInfectedPercentage() {
         return this.totalInfectedPercentage;
     }
+
 }

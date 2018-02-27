@@ -2,6 +2,7 @@ package com.jefftc.viral;
 
 import com.jefftc.viral.countries.CoastalCountry;
 import com.jefftc.viral.countries.LandLockedCountry;
+import com.jefftc.viral.mechanics.Continent;
 import com.jefftc.viral.mechanics.Country;
 
 import java.util.ArrayList;
@@ -19,6 +20,15 @@ public class ViralSimulationCountries {
     public static final int ASIA = 3;
     public static final int AUSTRALIA = 4;
     public static final int AFRICA = 5;
+
+    public static Continent[] continents = new Continent[]{
+            new Continent("North America", new ArrayList<>()),
+            new Continent("South America", new ArrayList<>()),
+            new Continent("Europe", new ArrayList<>()),
+            new Continent("Asia", new ArrayList<>()),
+            new Continent("Australia", new ArrayList<>()),
+            new Continent("Africa", new ArrayList<>())
+    };
 
     /**
      * Array of all of the Countries and their stats
@@ -825,12 +835,5 @@ public class ViralSimulationCountries {
                     24.9, 0.85, 0.95, 0.05
             )
     };
-
-    public static List<Country> northAmericanCountries = new ArrayList<>();
-    public static List<Country> southAmericanCountries = new ArrayList<>();
-    public static List<Country> europianCountries = new ArrayList<>();
-    public static List<Country> asianCountries = new ArrayList<>();
-    public static List<Country> australianCountries = new ArrayList<>();
-    public static List<Country> africanCountries = new ArrayList<>();
 
 }

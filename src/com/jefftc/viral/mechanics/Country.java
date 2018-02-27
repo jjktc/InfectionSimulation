@@ -34,6 +34,7 @@ public abstract class Country {
     protected static final Random RANDOM = new Random();
 
     protected ViralSimulation simulation;
+    private HashMap<String, Country> countryMap;
 
     private String name;
     private int continentCode;
@@ -89,25 +90,34 @@ public abstract class Country {
      */
     public void init(HashMap<String, Country> allCountries, ViralSimulation simulation) {
         this.simulation = simulation;
+        this.countryMap = allCountries;
 
-        for (String name : this.landConnectionNames) {
+        this.addConnections(this.landConnections, this.landConnectionNames);
+        this.addConnections(this.nonLandConnections, this.nonLandConnectionNames);
+
+        this.calculateMultipliers();
+    }
+
+    /**
+     * Check for the existence of the connection names and then add them to the list of connections
+     *
+     * @param destination the list to add connections to
+     * @param connectionNames the array of Country names
+     */
+    private void addConnections(List<Country> destination, String[] connectionNames) {
+        for (String name : connectionNames) {
             String lowerName = name.toLowerCase();
-            if (allCountries.containsKey(lowerName)) {
-                this.landConnections.add(allCountries.get(lowerName));
+            if (this.countryMap.containsKey(lowerName)) {
+                destination.add(this.countryMap.get(lowerName));
             }
         }
+    }
 
-        for (String name : this.nonLandConnectionNames) {
-            String lowerName = name.toLowerCase();
-            if (allCountries.containsKey(lowerName)) {
-                this.nonLandConnections.add(allCountries.get(lowerName));
-            }
-        }
-
-        /*
-        Heat and dampness increase chance of spread (due to factors like parasitic insects)
-        Poverty increases the chance of spread as well (due to lack of preventative measures)
-         */
+    /**
+     * Heat and dampness increase chance of spread (due to factors like parasitic insects)
+     * Poverty increases the chance of spread as well (due to lack of preventative measures)
+     */
+    private void calculateMultipliers() {
         this.internalSpreadMultiplier = (
                 heat * HEAT_INFECTIOUSNESS
                         + dampness * DAMPNESS_INFECTIOUSNESS
@@ -176,8 +186,8 @@ public abstract class Country {
      *
      * @return if the Country is infected entirely
      */
-    public boolean isCompletelyInfected() {
-        return this.infectedPopulation == this.population;
+    public boolean hasHealthPeople() {
+        return this.infectedPopulation < this.population;
     }
 
     /**

@@ -67,31 +67,7 @@ public class ViralSimulationData {
      * @param country the country to add
      */
     private static void addToCountryList(Country country) {
-        switch (country.getContinentCode()) {
-            case ViralSimulationCountries.NORTH_AMERICA:
-                ViralSimulationCountries.northAmericanCountries.add(country);
-                break;
-
-            case ViralSimulationCountries.SOUTH_AMERICA:
-                ViralSimulationCountries.southAmericanCountries.add(country);
-                break;
-
-            case ViralSimulationCountries.EUROPE:
-                ViralSimulationCountries.europianCountries.add(country);
-                break;
-
-            case ViralSimulationCountries.ASIA:
-                ViralSimulationCountries.asianCountries.add(country);
-                break;
-
-            case ViralSimulationCountries.AUSTRALIA:
-                ViralSimulationCountries.australianCountries.add(country);
-                break;
-
-            case ViralSimulationCountries.AFRICA:
-                ViralSimulationCountries.africanCountries.add(country);
-                break;
-        }
+        ViralSimulationCountries.continents[country.getContinentCode()].addCountry(country);
     }
 
     /**
