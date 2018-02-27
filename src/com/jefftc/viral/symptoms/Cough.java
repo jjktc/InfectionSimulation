@@ -8,7 +8,7 @@ import com.jefftc.viral.mechanics.Symptom;
 public class Cough extends Symptom {
 
     private static final String name = "Cough";
-    private static final double infectivity = 0.4;
+    private static final double infectivity = 5.0;
 
     /**
      * Get the name of the Symptom

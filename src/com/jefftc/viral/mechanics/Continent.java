@@ -46,6 +46,21 @@ public class Continent {
     }
 
     /**
+     * Gets a list of Country objects that are healthy
+     *
+     * @return a list of healthy Country objects
+     */
+    public List<Country> getHealthyCountries() {
+        List<Country> healthy = new ArrayList<>();
+        for (Country country : this.countries) {
+            if (country.getInfectedPopulation() == 0) {
+                healthy.add(country);
+            }
+        }
+        return healthy;
+    }
+
+    /**
      * Gets a list of Country objects that are infected
      *
      * @return a list of infected Country objects

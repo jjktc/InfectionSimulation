@@ -18,7 +18,7 @@ public class ViralSimulation extends Simulation {
 
     private static final int INFO_COL_WIDTH = 12;
 
-    private int weeks = 0;
+    private int days = 0;
     private List<Symptom> symptoms = new ArrayList<>();
     private boolean receivedCommand = false;
 
@@ -48,6 +48,28 @@ public class ViralSimulation extends Simulation {
         ViralSimulationData.init(this);
         this.isRunning = true;
 
+        this.inputSymptoms();
+        this.inputStartingCountry();
+        this.io.println("Simulation is now beginning (hit ENTER to advance one day)");
+    }
+
+    /**
+     * Ask the User to choose Symptom objects
+     */
+    private void inputSymptoms() {
+        this.io.println("What symptoms would you like to start with?");
+        for (Symptom symptom : ViralSimulationData.SYMPTOMS) {
+            if (this.useSymptom(symptom)) {
+                this.symptoms.add(symptom);
+            }
+        }
+        System.out.println();
+    }
+
+    /**
+     * Ask the User to choose the starting Country for the disease
+     */
+    private void inputStartingCountry() {
         this.io.println("What country would you like to start in?");
         Country[] countries = ViralSimulationCountries.COUNTRIES;
         for (int i = 0; i < countries.length; i++) {
@@ -62,15 +84,6 @@ public class ViralSimulation extends Simulation {
         this.io.println("Infection originates in " +
                 countries[startingCountryIndex].getName());
         System.out.println();
-
-        this.io.println("What symptoms would you like to start with?");
-        for (Symptom symptom : ViralSimulationData.SYMPTOMS) {
-            if (this.useSymptom(symptom)) {
-                this.symptoms.add(symptom);
-            }
-        }
-
-        this.io.println("Simulation is now beginning (hit ENTER to advance one week)");
     }
 
     /**
@@ -135,8 +148,8 @@ public class ViralSimulation extends Simulation {
             return;
         }
 
-        this.weeks++;
-        this.io.println("Week #" + this.weeks);
+        this.days++;
+        this.io.println("Day #" + this.days);
 
         boolean simulationOver = this.advanceSimulation();
         if (simulationOver) {
@@ -245,7 +258,7 @@ public class ViralSimulation extends Simulation {
      */
     @Override
     public void printEnding() {
-        this.io.println("After " + this.weeks + " weeks, every person on Earth has been infected.");
+        this.io.println("After " + this.days + " days, every person on Earth has been infected.");
     }
 
     /* GETTERS AND SETTERS */
@@ -254,4 +267,7 @@ public class ViralSimulation extends Simulation {
         return this.totalInfectedPercentage;
     }
 
+    public List<Symptom> getSymptoms() {
+        return symptoms;
+    }
 }

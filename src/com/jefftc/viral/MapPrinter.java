@@ -8,9 +8,10 @@ import java.util.List;
  */
 public class MapPrinter {
 
-    private static final double THRESHOLD_THREE = 0.97;
-    private static final double THRESHOLD_TWO = 0.8;
-    private static final double THRESHOLD_ONE = 0.4;
+    private static final double THRESHOLD_FOUR = 0.97;
+    private static final double THRESHOLD_THREE = 0.75;
+    private static final double THRESHOLD_TWO = 0.5;
+    private static final double THRESHOLD_ONE = 0.25;
 
     /**
      * ASCII map of the world filled with characters to represent continent
@@ -84,12 +85,14 @@ public class MapPrinter {
      * @return the filtered line
      */
     private static String filterLine(String line, String filterCharacter, double filterAmount) {
-        if (filterAmount > THRESHOLD_THREE) {
-            return line.replaceAll(filterCharacter, "▓");
+        if (filterAmount > THRESHOLD_FOUR) {
+            return line.replaceAll(filterCharacter, "⣿");
+        } else if (filterAmount > THRESHOLD_THREE) {
+            return line.replaceAll(filterCharacter, "⢰");
         } else if (filterAmount > THRESHOLD_TWO) {
-            return line.replaceAll(filterCharacter, "░");
+            return line.replaceAll(filterCharacter, "⠒");
         } else if (filterAmount > THRESHOLD_ONE) {
-            return line.replaceAll(filterCharacter, ".");
+            return line.replaceAll(filterCharacter, "⠁");
         } else {
             return line.replaceAll(filterCharacter, " ");
         }

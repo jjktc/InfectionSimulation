@@ -6,7 +6,6 @@ import com.jefftc.viral.mechanics.Continent;
 import com.jefftc.viral.mechanics.Country;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class containing all of the Country data for the Viral Simulation

@@ -1,5 +1,6 @@
 package com.jefftc.viral.countries;
 
+import com.jefftc.viral.mechanics.Continent;
 import com.jefftc.viral.mechanics.Country;
 import com.jefftc.viral.mechanics.Symptom;
 
@@ -66,8 +67,7 @@ public class CoastalCountry extends Country {
                 // Enough people infected to cross border
                 if (RANDOM.nextDouble() < this.externalSpreadChance) {
                     // Infection spreads to another Country by land
-                    int connectionIndex = RANDOM.nextInt(this.landConnections.size());
-                    this.infect(this.landConnections.get(connectionIndex));
+                    this.spreadToHealthyCountry(this.landConnections);
                 }
             }
         }
@@ -84,8 +84,7 @@ public class CoastalCountry extends Country {
                     // Enough people infected to cross border
                     if (RANDOM.nextDouble() < this.externalSpreadChance) {
                         // Infection spreads to another Country by air/sea
-                        int connectionIndex = RANDOM.nextInt(this.nonLandConnections.size());
-                        this.infect(this.nonLandConnections.get(connectionIndex));
+                        this.spreadToHealthyCountry(this.nonLandConnections);
                     }
                 }
             }
@@ -98,6 +97,7 @@ public class CoastalCountry extends Country {
     @Override
     public void startInfection() {
         if (this.infectedPopulation == 0) {
+            this.applySymptoms();
             this.setInfectedPopulation(INITIAL_INFECTION_COUNT);
         }
     }

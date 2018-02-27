@@ -20,9 +20,9 @@ public abstract class Country {
      * Heat and dampness increase the chance of disease spread
      * Wealth decreases the chance of disease spread
      */
-    private static final double HEAT_INFECTIOUSNESS = 0.5;
-    private static final double DAMPNESS_INFECTIOUSNESS = 0.2;
-    private static final double WEALTH_INFECTIOUSNESS = 0.7;
+    private static final double HEAT_INFECTIOUSNESS = 0.2;
+    private static final double DAMPNESS_INFECTIOUSNESS = 0.1;
+    private static final double WEALTH_INFECTIOUSNESS = 0.4;
     protected static final double MINIMUM_INFECTION_MULTIPLIER = 0.005;
 
     /**
@@ -91,7 +91,6 @@ public abstract class Country {
     public void init(HashMap<String, Country> allCountries, ViralSimulation simulation) {
         this.simulation = simulation;
         this.countryMap = allCountries;
-
         this.addConnections(this.landConnections, this.landConnectionNames);
         this.addConnections(this.nonLandConnections, this.nonLandConnectionNames);
 
@@ -123,8 +122,18 @@ public abstract class Country {
                         + dampness * DAMPNESS_INFECTIOUSNESS
                         + (1.0 - this.wealth) * WEALTH_INFECTIOUSNESS
         );
+
         this.externalSpreadMultiplier = this.internalSpreadMultiplier;
         this.internalSpreadMultiplier /= LAND_THRESHOLD;
+    }
+
+    /**
+     * Apply the infection multiplier from the symptoms
+     */
+    protected void applySymptoms() {
+        for (Symptom symptom : this.simulation.getSymptoms()) {
+            internalSpreadMultiplier += symptom.getInfectivity(this.heat, this.dampness, this.wealth);
+        }
     }
 
     /**
@@ -160,24 +169,29 @@ public abstract class Country {
     }
 
     /**
-     * Get if the Country is connected to an infected country with a percentage over the threshold
+     * Get if the Country is connected to an infected Country with a percentage over the threshold
      *
      * @param threshold the point to determine if it is infected
      * @return if there is an infected connection
      */
     protected boolean isConnectedToInfectedCountry(double threshold) {
-        for (Country connection : this.landConnections) {
+        return this.isConnectedToInfection(this.landConnections, threshold)
+                || this.isConnectedToInfection(this.nonLandConnections, threshold);
+    }
+
+    /**
+     * Get if the Country is connected to an infected Country by a list of connections
+     *
+     * @param connections the list of connections
+     * @param threshold the threshold to determine if it is infected
+     * @return if there is an infected connection
+     */
+    private boolean isConnectedToInfection(List<Country> connections, double threshold) {
+        for (Country connection : connections) {
             if (connection.infectedPercentage > threshold) {
                 return true;
             }
         }
-
-        for (Country connection : this.nonLandConnections) {
-            if (connection.infectedPercentage > threshold) {
-                return true;
-            }
-        }
-
         return false;
     }
 
@@ -188,6 +202,21 @@ public abstract class Country {
      */
     public boolean hasHealthPeople() {
         return this.infectedPopulation < this.population;
+    }
+
+    /**
+     * Spread to a random healthy connected Country
+     *
+     * @param connections the list of connections
+     */
+    protected void spreadToHealthyCountry(List<Country> connections) {
+        Continent connectionContinent = new Continent("", connections);
+        List<Country> healthyCountries = connectionContinent.getHealthyCountries();
+
+        if (healthyCountries.size() > 0) {
+            int connectionIndex = RANDOM.nextInt(healthyCountries.size());
+            this.infect(healthyCountries.get(connectionIndex));
+        }
     }
 
     /**
