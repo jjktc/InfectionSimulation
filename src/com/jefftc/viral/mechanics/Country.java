@@ -35,31 +35,32 @@ public abstract class Country {
 
     protected ViralSimulation simulation;
 
-    protected String name;
+    private String name;
+    private int continentCode;
     protected int population;
     protected int infectedPopulation;
     protected double infectedPercentage;
-    protected double heat;
-    protected double dampness;
+    private double heat;
+    private double dampness;
     protected double wealth;
 
-    protected double internalSpreadMultiplier;
-    protected double externalSpreadMultiplier;
+    private double internalSpreadMultiplier;
+    private double externalSpreadMultiplier;
     protected double internalSpreadChance;
     protected double externalSpreadChance;
 
-    protected String[] landConnectionNames;
-    protected String[] nonLandConnectionNames;
+    private String[] landConnectionNames;
+    private String[] nonLandConnectionNames;
     protected List<Country> landConnections = new ArrayList<>();
     protected List<Country> nonLandConnections = new ArrayList<>();
 
-    protected boolean landBordersOpen = true;
-    protected boolean nonLandBordersOpen = true;
+    protected boolean bordersOpen = true;
 
     /**
      * Create a Country with a given name, population size, heat, dampness, and array of connections
      *
      * @param name                   the name of the Country
+     * @param continentCode          the code of the continent it belongs to
      * @param landConnectionNames    the array of connected Country objects via land
      * @param nonLandConnectionNames the array of connected Country objects via non-land
      * @param population             the total population size (in millions)
@@ -67,9 +68,11 @@ public abstract class Country {
      * @param dampness               the dampness (out of 1.0)
      * @param wealth                 the wealth (out of 1.0)
      */
-    public Country(String name, String[] landConnectionNames, String[] nonLandConnectionNames,
-                   double population, double heat, double dampness, double wealth) {
+    public Country(String name, int continentCode, String[] landConnectionNames,
+                   String[] nonLandConnectionNames, double population, double heat, double dampness,
+                   double wealth) {
         this.name = name;
+        this.continentCode = continentCode;
         this.landConnectionNames = landConnectionNames;
         this.nonLandConnectionNames = nonLandConnectionNames;
         this.population = (int) (population * MILLION);
@@ -82,27 +85,34 @@ public abstract class Country {
      * Initialize the Country properties
      *
      * @param allCountries the map of all the Country objects
-     * @param simulation the simulation object
+     * @param simulation   the simulation object
      */
     public void init(HashMap<String, Country> allCountries, ViralSimulation simulation) {
         this.simulation = simulation;
 
         for (String name : this.landConnectionNames) {
-            if (allCountries.containsKey(name)) {
-                this.landConnections.add(allCountries.get(name));
+            String lowerName = name.toLowerCase();
+            if (allCountries.containsKey(lowerName)) {
+                this.landConnections.add(allCountries.get(lowerName));
             }
         }
 
         for (String name : this.nonLandConnectionNames) {
-            if (allCountries.containsKey(name)) {
-                this.nonLandConnections.add(allCountries.get(name));
+            String lowerName = name.toLowerCase();
+            if (allCountries.containsKey(lowerName)) {
+                this.nonLandConnections.add(allCountries.get(lowerName));
             }
         }
 
+        /*
+        Heat and dampness increase chance of spread (due to factors like parasitic insects)
+        Poverty increases the chance of spread as well (due to lack of preventative measures)
+         */
         this.internalSpreadMultiplier = (
                 heat * HEAT_INFECTIOUSNESS
                         + dampness * DAMPNESS_INFECTIOUSNESS
-                        + (1.0 - this.wealth) * WEALTH_INFECTIOUSNESS);
+                        + (1.0 - this.wealth) * WEALTH_INFECTIOUSNESS
+        );
         this.externalSpreadMultiplier = this.internalSpreadMultiplier;
         this.internalSpreadMultiplier /= LAND_THRESHOLD;
     }
@@ -217,7 +227,7 @@ public abstract class Country {
         return infectedPopulation;
     }
 
-    public void setInfectedPopulation(int infectedPopulation) {
+    protected void setInfectedPopulation(int infectedPopulation) {
         this.infectedPopulation = infectedPopulation;
         if (this.infectedPopulation > this.population) {
             this.infectedPopulation = this.population;
@@ -232,7 +242,10 @@ public abstract class Country {
     }
 
     public boolean isBorderOpen() {
-        return landBordersOpen || nonLandBordersOpen;
+        return bordersOpen;
     }
 
+    public int getContinentCode() {
+        return continentCode;
+    }
 }

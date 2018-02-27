@@ -23,10 +23,11 @@ public class ViralSimulation extends Simulation {
     private int weeks = 0;
     private List<Symptom> symptoms = new ArrayList<>();
     private double totalWorldPopulation = 0.0;
-    private double totalInfectedPopulation = 0.0;
     private double totalInfectedPercentage = 0.0;
+    private boolean receivedCommand = false;
 
-    private boolean detected = false;
+    private double[] continentPopulations = new double[ViralSimulationCountries.TOTAL_CONTINENTS];
+    private double[] continentPercentages = new double[ViralSimulationCountries.TOTAL_CONTINENTS];
 
     /**
      * Create a Simulation with a given InputLayer
@@ -47,15 +48,18 @@ public class ViralSimulation extends Simulation {
         this.isRunning = true;
 
         this.io.println("What country would you like to start in?");
-        for (int i = 0; i < ViralSimulationCountries.COUNTRIES.length; i++) {
-            this.totalWorldPopulation += ViralSimulationCountries.COUNTRIES[i].getPopulation();
-            this.io.printlnIndented(i + "\t: " + ViralSimulationCountries.COUNTRIES[i].getName());
+        Country[] countries = ViralSimulationCountries.COUNTRIES;
+        for (int i = 0; i < countries.length; i++) {
+            this.totalWorldPopulation += countries[i].getPopulation();
+            this.continentPopulations[countries[i].getContinentCode()] += countries[i].getPopulation();
+
+            this.io.printlnIndented(i + "\t: " + countries[i].getName());
         }
 
-        int startingCountryIndex = this.io.expectInt(0, ViralSimulationCountries.COUNTRIES.length);
-        ViralSimulationCountries.COUNTRIES[startingCountryIndex].startInfection();
+        int startingCountryIndex = this.io.expectInt(0, countries.length);
+        countries[startingCountryIndex].startInfection();
         this.io.println("Infection originates in " +
-                ViralSimulationCountries.COUNTRIES[startingCountryIndex].getName());
+                countries[startingCountryIndex].getName());
         System.out.println();
 
         this.io.println("What symptoms would you like to start with?");
@@ -86,10 +90,12 @@ public class ViralSimulation extends Simulation {
      */
     @Override
     public void processInput() {
+        this.receivedCommand = false;
         String fullInput = this.io.receiveInput();
         Command command = this.io.detectCommand(fullInput);
 
         if (command != null) {
+            this.receivedCommand = true;
             String body = command.getBody(fullInput);
 
             switch (command.getCommand()) {
@@ -110,7 +116,10 @@ public class ViralSimulation extends Simulation {
                     } else {
                         this.io.println("Could not find a Country with the given name");
                     }
-                    System.out.println();
+                    break;
+
+                default:
+                    this.io.println("Sorry, did not recognize the given command");
                     break;
             }
         }
@@ -121,6 +130,10 @@ public class ViralSimulation extends Simulation {
      */
     @Override
     public void run() {
+        if (this.receivedCommand) {
+            return;
+        }
+
         this.weeks++;
         this.io.println("Week #" + this.weeks);
         boolean healthyPeople = false;
@@ -145,15 +158,21 @@ public class ViralSimulation extends Simulation {
      */
     @Override
     public void print() {
+        if (this.receivedCommand) {
+            return;
+        }
+
         List<String> infectedNames = new ArrayList<>();
         List<Double> infectedPercentages = new ArrayList<>();
         double totalInfectedPopulation = 0.0;
+        double[] continentInfectedPopulations = new double[ViralSimulationCountries.TOTAL_CONTINENTS];
 
         Arrays.sort(ViralSimulationCountries.COUNTRIES,
                 Comparator.comparing(Country::getInfectedPercentage).reversed());
 
         for (Country country : ViralSimulationCountries.COUNTRIES) {
             totalInfectedPopulation += country.getInfectedPopulation();
+            continentInfectedPopulations[country.getContinentCode()] += country.getInfectedPopulation();
 
             if (country.getInfectedPopulation() > 0) {
                 // Only print out bars for healthy countries
@@ -166,12 +185,19 @@ public class ViralSimulation extends Simulation {
             }
         }
 
-        this.totalInfectedPopulation = totalInfectedPopulation;
-        this.totalInfectedPercentage = this.totalInfectedPopulation / this.totalWorldPopulation;
+        this.totalInfectedPercentage = totalInfectedPopulation / this.totalWorldPopulation;
+        for (int i = 0; i < ViralSimulationCountries.TOTAL_CONTINENTS; i++) {
+            this.continentPercentages[i] = continentInfectedPopulations[i] / this.continentPopulations[i];
+        }
 
         infectedNames.add("TOTAL");
         infectedPercentages.add(this.totalInfectedPercentage);
         this.io.printAllBars(infectedNames, infectedPercentages);
+
+        List<String> mapLines = MapPrinter.getFilterMap(this.continentPercentages);
+        for (String line : mapLines) {
+            System.out.println(line);
+        }
     }
 
     /**

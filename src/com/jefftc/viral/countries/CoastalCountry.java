@@ -24,6 +24,7 @@ public class CoastalCountry extends Country {
      * Create a Country with a given name, population size, heat, dampness, and array of connections
      *
      * @param name                   the name of the Country
+     * @param continentCode          the code of the continent it belongs to
      * @param landConnectionNames    the array of connected Country objects via land
      * @param nonLandConnectionNames the array of connected Country objects via non-land
      * @param population             the total population size (in millions)
@@ -31,9 +32,11 @@ public class CoastalCountry extends Country {
      * @param dampness               the dampness (out of 1.0)
      * @param wealth                 the wealth (out of 1.0)
      */
-    public CoastalCountry(String name, String[] landConnectionNames, String[] nonLandConnectionNames,
-                          double population, double heat, double dampness, double wealth) {
-        super(name, landConnectionNames, nonLandConnectionNames, population, heat, dampness, wealth);
+    public CoastalCountry(String name, int continentCode, String[] landConnectionNames,
+                          String[] nonLandConnectionNames, double population, double heat,
+                          double dampness, double wealth) {
+        super(name, continentCode, landConnectionNames, nonLandConnectionNames, population, heat,
+                dampness, wealth);
     }
 
     /**
@@ -45,35 +48,48 @@ public class CoastalCountry extends Country {
     @Override
     public void nextEpoch(List<Symptom> symptoms) {
         if (this.infectedPopulation > 0) {
+            // Infection can be spread
             this.spreadInternally(symptoms);
+            this.spreadByLand();
+            this.spreadByAir();
+        }
 
-            if (this.nonLandBordersOpen || Math.random() < SPREAD_OVER_CLOSED_BORDER_CHANCE) {
-                // Unlike a Land border, non-land borders can be closed effectively to prevent spread
-                if (this.nonLandConnections.size() > 0) {
-                    if (this.infectedPercentage > NON_LAND_THRESHOLD) {
-                        // Enough people infected to cross border
-                        if (RANDOM.nextDouble() < this.externalSpreadChance) {
-                            // Infection spreads to another Country by air/sea
-                            int connectionIndex = RANDOM.nextInt(this.nonLandConnections.size());
-                            this.infect(this.nonLandConnections.get(connectionIndex));
-                        }
-                    }
+        this.closeBorders();
+    }
+
+    /**
+     * Both LandLocked and Coastal Country objects can spread the infection over land
+     */
+    private void spreadByLand() {
+        if (this.landConnections.size() > 0) {
+            if (this.infectedPercentage > LAND_THRESHOLD) {
+                // Enough people infected to cross border
+                if (RANDOM.nextDouble() < this.externalSpreadChance) {
+                    // Infection spreads to another Country by land
+                    int connectionIndex = RANDOM.nextInt(this.landConnections.size());
+                    this.infect(this.landConnections.get(connectionIndex));
                 }
             }
+        }
+    }
 
-            if (this.landConnections.size() > 0) {
-                if (this.infectedPercentage > LAND_THRESHOLD) {
+    /**
+     * Only Coastal Country objects can spread the infection by means other than land (ie planes/boats)
+     */
+    private void spreadByAir() {
+        if (this.bordersOpen || Math.random() < SPREAD_OVER_CLOSED_BORDER_CHANCE) {
+            // Unlike a Land border, non-land borders can be closed effectively to prevent spread
+            if (this.nonLandConnections.size() > 0) {
+                if (this.infectedPercentage > NON_LAND_THRESHOLD) {
                     // Enough people infected to cross border
                     if (RANDOM.nextDouble() < this.externalSpreadChance) {
-                        // Infection spreads to another Country by land
-                        int connectionIndex = RANDOM.nextInt(this.landConnections.size());
-                        this.infect(this.landConnections.get(connectionIndex));
+                        // Infection spreads to another Country by air/sea
+                        int connectionIndex = RANDOM.nextInt(this.nonLandConnections.size());
+                        this.infect(this.nonLandConnections.get(connectionIndex));
                     }
                 }
             }
         }
-
-        this.closeBorders();
     }
 
     /**
@@ -118,15 +134,18 @@ public class CoastalCountry extends Country {
     /**
      * Closes the borders, decreasing chance of spread, controllable by player.
      * Coastal Country objects are more aggressive with border closing due to higher risk of spread.
-     * Wealthy countries close borders earlier
+     * Wealthy countries close borders earlier.
+     * Coastal Countries close borders based on the overall world state
      */
     @Override
     public void closeBorders() {
-        if (this.landBordersOpen || this.nonLandBordersOpen) {
+        if (this.bordersOpen) {
             boolean imminentThreat =
-                    this.simulation.getTotalInfectedPercentage() > BORDER_CLOSE_THRESHOLD / this.wealth;
-            this.landBordersOpen = !imminentThreat;
-            this.nonLandBordersOpen = !imminentThreat;
+                    this.simulation.getTotalInfectedPercentage() > BORDER_CLOSE_THRESHOLD;
+            if (Math.random() < this.wealth) {
+                // Wealthy nations are more likely to close borders since they detect it
+                this.bordersOpen = !imminentThreat;
+            }
         }
     }
 

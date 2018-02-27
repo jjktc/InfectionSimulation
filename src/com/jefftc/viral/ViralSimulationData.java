@@ -19,6 +19,8 @@ public class ViralSimulationData {
     public static final int CMD_QUIT = 0;
     public static final int CMD_INFO = 1;
 
+    private static HashMap<String, Country> countryMap;
+
     /**
      * Array of Command objects available to the user
      */
@@ -47,14 +49,48 @@ public class ViralSimulationData {
      */
     public static void init(ViralSimulation  simulation) {
         Arrays.sort(ViralSimulationCountries.COUNTRIES, Comparator.comparing(Country::getName));
-        HashMap<String, Country> countryMap = new HashMap<>();
+        countryMap = new HashMap<>();
 
         for (Country country : ViralSimulationCountries.COUNTRIES) {
-            countryMap.put(country.getName(), country);
+            countryMap.put(country.getName().toLowerCase(), country);
+            addToCountryList(country);
         }
 
         for (Country country : ViralSimulationCountries.COUNTRIES) {
             country.init(countryMap, simulation);
+        }
+    }
+
+    /**
+     * Add a country to the static country lists based on continent
+     *
+     * @param country the country to add
+     */
+    private static void addToCountryList(Country country) {
+        switch (country.getContinentCode()) {
+            case ViralSimulationCountries.NORTH_AMERICA:
+                ViralSimulationCountries.northAmericanCountries.add(country);
+                break;
+
+            case ViralSimulationCountries.SOUTH_AMERICA:
+                ViralSimulationCountries.southAmericanCountries.add(country);
+                break;
+
+            case ViralSimulationCountries.EUROPE:
+                ViralSimulationCountries.europianCountries.add(country);
+                break;
+
+            case ViralSimulationCountries.ASIA:
+                ViralSimulationCountries.asianCountries.add(country);
+                break;
+
+            case ViralSimulationCountries.AUSTRALIA:
+                ViralSimulationCountries.australianCountries.add(country);
+                break;
+
+            case ViralSimulationCountries.AFRICA:
+                ViralSimulationCountries.africanCountries.add(country);
+                break;
         }
     }
 
@@ -65,10 +101,9 @@ public class ViralSimulationData {
      * @return the Country object matching the name
      */
     public static Country findCountry(String name) {
-        for (Country country : ViralSimulationCountries.COUNTRIES) {
-            if (country.getName().equalsIgnoreCase(name)) {
-                return country;
-            }
+        String lowerName = name.toLowerCase();
+        if (countryMap.containsKey(lowerName)) {
+            return countryMap.get(lowerName);
         }
 
         return null;
