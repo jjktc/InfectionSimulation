@@ -1,6 +1,5 @@
 package com.jefftc.viral.countries;
 
-import com.jefftc.viral.mechanics.Continent;
 import com.jefftc.viral.mechanics.Country;
 import com.jefftc.viral.mechanics.Symptom;
 

@@ -55,22 +55,24 @@ public class MapPrinter {
     public static List<String> getFilterMap(double[] percentages) {
         List<String> filteredMap = new ArrayList<>();
 
-        for (String line : MAP) {
-            String filteredLine = line;
-            filteredLine = filterLine(filteredLine, "N",
-                    percentages[ViralSimulationCountries.NORTH_AMERICA]);
-            filteredLine = filterLine(filteredLine, "S",
-                    percentages[ViralSimulationCountries.SOUTH_AMERICA]);
-            filteredLine = filterLine(filteredLine, "E",
-                    percentages[ViralSimulationCountries.EUROPE]);
-            filteredLine = filterLine(filteredLine, "A",
-                    percentages[ViralSimulationCountries.ASIA]);
-            filteredLine = filterLine(filteredLine, "U",
-                    percentages[ViralSimulationCountries.AUSTRALIA]);
-            filteredLine = filterLine(filteredLine, "F",
-                    percentages[ViralSimulationCountries.AFRICA]);
+        if (percentages.length == ViralSimulationCountries.TOTAL_CONTINENTS) {
+            for (String line : MAP) {
+                String filteredLine = line;
+                filteredLine = filterLine(filteredLine, "N",
+                        percentages[ViralSimulationCountries.NORTH_AMERICA]);
+                filteredLine = filterLine(filteredLine, "S",
+                        percentages[ViralSimulationCountries.SOUTH_AMERICA]);
+                filteredLine = filterLine(filteredLine, "E",
+                        percentages[ViralSimulationCountries.EUROPE]);
+                filteredLine = filterLine(filteredLine, "A",
+                        percentages[ViralSimulationCountries.ASIA]);
+                filteredLine = filterLine(filteredLine, "U",
+                        percentages[ViralSimulationCountries.AUSTRALIA]);
+                filteredLine = filterLine(filteredLine, "F",
+                        percentages[ViralSimulationCountries.AFRICA]);
 
-            filteredMap.add(filteredLine);
+                filteredMap.add(filteredLine);
+            }
         }
 
         return filteredMap;
@@ -84,7 +86,7 @@ public class MapPrinter {
      * @param filterAmount    if it should be filled in or space
      * @return the filtered line
      */
-    private static String filterLine(String line, String filterCharacter, double filterAmount) {
+    public static String filterLine(String line, String filterCharacter, double filterAmount) {
         if (filterAmount > THRESHOLD_FOUR) {
             return line.replaceAll(filterCharacter, "⣿");
         } else if (filterAmount > THRESHOLD_THREE) {

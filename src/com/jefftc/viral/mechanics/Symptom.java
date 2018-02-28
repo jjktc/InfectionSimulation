@@ -5,6 +5,9 @@ package com.jefftc.viral.mechanics;
  */
 public abstract class Symptom {
 
+    /**
+     * Empty constructor
+     */
     public Symptom() {
     }
 
@@ -18,9 +21,9 @@ public abstract class Symptom {
     /**
      * Get the infectivity value of the Symptom
      *
-     * @param heat the heat of the Country
+     * @param heat     the heat of the Country
      * @param dampness the dampness of the Country
-     * @param wealth the wealth of the Country
+     * @param wealth   the wealth of the Country
      * @return the infectivity
      */
     public abstract double getInfectivity(double heat, double dampness, double wealth);

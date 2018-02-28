@@ -100,7 +100,7 @@ public abstract class Country {
     /**
      * Check for the existence of the connection names and then add them to the list of connections
      *
-     * @param destination the list to add connections to
+     * @param destination     the list to add connections to
      * @param connectionNames the array of Country names
      */
     private void addConnections(List<Country> destination, String[] connectionNames) {
@@ -143,12 +143,15 @@ public abstract class Country {
      * @return if the countries are connected
      */
     protected boolean isConnectedByLand(Country target) {
+        if (target == null) {
+            return false;
+        }
+
         for (Country connection : this.landConnections) {
             if (connection.getName().equals(target.getName())) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -159,12 +162,15 @@ public abstract class Country {
      * @return if the countries are connected
      */
     protected boolean isConnectedByNonLand(Country target) {
+        if (target == null) {
+            return false;
+        }
+
         for (Country connection : this.nonLandConnections) {
             if (connection.getName().equals(target.getName())) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -183,7 +189,7 @@ public abstract class Country {
      * Get if the Country is connected to an infected Country by a list of connections
      *
      * @param connections the list of connections
-     * @param threshold the threshold to determine if it is infected
+     * @param threshold   the threshold to determine if it is infected
      * @return if there is an infected connection
      */
     private boolean isConnectedToInfection(List<Country> connections, double threshold) {

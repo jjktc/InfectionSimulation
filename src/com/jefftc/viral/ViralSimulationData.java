@@ -47,7 +47,7 @@ public class ViralSimulationData {
      *
      * @param simulation the simulation object
      */
-    public static void init(ViralSimulation  simulation) {
+    public static void init(ViralSimulation simulation) {
         Arrays.sort(ViralSimulationCountries.COUNTRIES, Comparator.comparing(Country::getName));
         countryMap = new HashMap<>();
 

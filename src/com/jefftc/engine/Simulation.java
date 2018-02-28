@@ -2,7 +2,7 @@ package com.jefftc.engine;
 
 public abstract class Simulation {
 
-    public InputLayer io;
+    protected InputLayer io;
     public boolean isRunning;
 
     /**

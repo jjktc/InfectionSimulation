@@ -1,6 +1,5 @@
 package com.jefftc.engine;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -27,8 +26,6 @@ public class InputLayer {
      */
     public ArrayList<String> predefinedInput = new ArrayList<>();
     private int inputIndex = 0;
-
-    public boolean waitingForInput = false;
 
     /**
      * Create an input layer to either accept data from the user or from the test
@@ -101,17 +98,24 @@ public class InputLayer {
      */
     public boolean expectBoolean() {
         String response = this.receiveInput().toLowerCase();
-        if (response.equals("true") || response.equals("t")
-                || response.equals("yes") || response.equals("y")) {
-            // True aka Yes
-            return true;
-        } else if (response.equals("false") || response.equals("f")
-                || response.equals("no") || response.equals("n")) {
-            // False aka No
-            return false;
-        } else if (response.equals("quit")) {
-            // Quit the program
-            System.exit(0);
+        switch (response) {
+            case "true":
+            case "t":
+            case "yes":
+            case "y":
+            case "1":
+                // True aka Yes
+                return true;
+            case "false":
+            case "f":
+            case "no":
+            case "n":
+            case "0":
+                // False aka No
+                return false;
+            case "quit":
+                // Quit the program
+                System.exit(0);
         }
 
         this.println("You must supply a yes or no answer, please try again");
@@ -202,8 +206,8 @@ public class InputLayer {
     /**
      * Print out a bar graph section with the label
      *
-     * @param message the message label
-     * @param width the width of the columns
+     * @param message    the message label
+     * @param width      the width of the columns
      * @param percentage the percentage of the bar
      */
     private void printBar(String message, int width, double percentage) {
@@ -214,7 +218,7 @@ public class InputLayer {
     /**
      * Print out a list of bars
      *
-     * @param messages the list of messages
+     * @param messages    the list of messages
      * @param percentages the list of percentages
      */
     public void printAllBars(List<String> messages, List<Double> percentages) {
@@ -237,7 +241,7 @@ public class InputLayer {
      * @param value the double value
      * @return the string value
      */
-    private static String printableStatus(double value, double baseValue) {
+    public static String printableStatus(double value, double baseValue) {
         StringBuilder status = new StringBuilder();
         int bars = (int) Math.floor(STATUS_SIZE * (value / baseValue));
 
@@ -263,7 +267,7 @@ public class InputLayer {
      * @param value the double value
      * @return the string value
      */
-    private static String printableDouble(double value) {
+    public static String printableDouble(double value) {
         return String.format("%.2f", value);
     }
 

@@ -199,21 +199,47 @@ public class ViralSimulation extends Simulation {
         List<String> infectedNames = new ArrayList<>();
         List<Double> infectedPercentages = new ArrayList<>();
 
+        this.addAllContinentBars(infectedNames, infectedPercentages, infectedCountries);
+        this.addAllCountryBars(infectedNames, infectedPercentages, infectedCountries);
+
+        this.calculatePercentages();
+        infectedNames.add("TOTAL");
+        infectedPercentages.add(this.totalInfectedPercentage);
+        this.io.printAllBars(infectedNames, infectedPercentages);
+    }
+
+    /**
+     * Get the printable lists for the continents
+     *
+     * @param names       the destination list of names
+     * @param percentages the destination list of percentages
+     * @param infected    the destination list of countries
+     */
+    private void addAllContinentBars(List<String> names, List<Double> percentages, List<Country> infected) {
         for (Continent continent : ViralSimulationCountries.continents) {
             if (continent.isAllInfected()) {
                 // Can treat all Countries in Continent as one unit
                 this.totalInfectedPopulation += continent.getInfectedPopulation();
 
-                infectedNames.add(continent.getName());
-                infectedPercentages.add(continent.getInfectedPercentage());
+                names.add(continent.getName());
+                percentages.add(continent.getInfectedPercentage());
             } else {
                 // Handle all Countries separately
-                infectedCountries.addAll(continent.getInfectedCountries());
+                infected.addAll(continent.getInfectedCountries());
             }
         }
+    }
 
-        infectedCountries.sort(Comparator.comparing(Country::getInfectedPercentage).reversed());
-        for (Country country : infectedCountries) {
+    /**
+     * Get the printable lists for all the countries
+     *
+     * @param names       the destination list of names
+     * @param percentages the destination list of percentages
+     * @param infected    the list of countries to go through
+     */
+    private void addAllCountryBars(List<String> names, List<Double> percentages, List<Country> infected) {
+        infected.sort(Comparator.comparing(Country::getInfectedPercentage).reversed());
+        for (Country country : infected) {
             // Print out all individual infected Countries if Continent isn't entirely infected
             this.totalInfectedPopulation += country.getInfectedPopulation();
             this.continentInfectedPopulations[country.getContinentCode()] += country.getInfectedPopulation();
@@ -223,14 +249,9 @@ public class ViralSimulation extends Simulation {
                 countryTag += " [ CLOSED ]";
             }
 
-            infectedNames.add(countryTag);
-            infectedPercentages.add(country.getInfectedPercentage());
+            names.add(countryTag);
+            percentages.add(country.getInfectedPercentage());
         }
-
-        this.calculatePercentages();
-        infectedNames.add("TOTAL");
-        infectedPercentages.add(this.totalInfectedPercentage);
-        this.io.printAllBars(infectedNames, infectedPercentages);
     }
 
     /**

@@ -24,7 +24,7 @@ public class LandLockedCountry extends Country {
      * Create a Country with a given name, population size, heat, dampness, and array of connections
      *
      * @param name            the name of the Country
-     * @param continentCode          the code of the continent it belongs to
+     * @param continentCode   the code of the continent it belongs to
      * @param connectionNames the array of connected Country objects
      * @param population      the total population size (in millions)
      * @param heat            the heat (out of 1.0)

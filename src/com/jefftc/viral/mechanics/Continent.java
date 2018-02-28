@@ -14,7 +14,7 @@ public class Continent {
     /**
      * Create a Continent with a name and given list of Country objects
      *
-     * @param name the name of the Continent
+     * @param name      the name of the Continent
      * @param countries the list of Country objects
      */
     public Continent(String name, List<Country> countries) {

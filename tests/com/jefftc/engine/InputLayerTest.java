@@ -11,6 +11,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class InputLayerTest {
+
     private InputLayer io = new InputLayer(false);
 
     private static final String TEST_INPUT_1 = "This is a test";
@@ -61,6 +62,59 @@ public class InputLayerTest {
 
         assertEquals("", io.receiveInput());
         assertTrue(io.inputHistory.isEmpty());
+    }
+
+    /**
+     * Test expecting a boolean
+     */
+    @Test
+    public void expectBooleanTest() {
+        io.predefinedInput.add("yes");
+        boolean receivedBoolean = io.expectBoolean();
+        assertTrue(receivedBoolean);
+    }
+
+    /**
+     * Test expecting a boolean but receiving something else
+     */
+    @Test
+    public void expectBooleanNotBooleanTest() {
+        io.predefinedInput.add("hello");
+        io.predefinedInput.add("0");
+        boolean receivedBoolean = io.expectBoolean();
+        assertFalse(receivedBoolean);
+    }
+
+    /**
+     * Test expecting an int
+     */
+    @Test
+    public void expectIntTest() {
+        io.predefinedInput.add("5");
+        int receivedInt = io.expectInt(0, 6);
+        assertEquals(5, receivedInt);
+    }
+
+    /**
+     * Test expecting an int and receiving one out of bounds
+     */
+    @Test
+    public void expectIntOutOfBoundsTest() {
+        io.predefinedInput.add("10");
+        io.predefinedInput.add("2");
+        int receivedInt = io.expectInt(0, 6);
+        assertEquals(2, receivedInt);
+    }
+
+    /**
+     * Test expecting an int and receiving a string
+     */
+    @Test
+    public void expectIntNotIntTest() {
+        io.predefinedInput.add("hello");
+        io.predefinedInput.add("9");
+        int receivedInt = 9;
+        assertEquals(9, receivedInt);
     }
 
     /**
@@ -170,6 +224,44 @@ public class InputLayerTest {
     }
 
     /**
+     * Get the printed bar given a fractional value
+     */
+    @Test
+    public void printableStatusTest() {
+        assertEquals(
+                "█████████████████████████████████████████████░░░░░ 90%",
+                InputLayer.printableStatus(0.9, 1.0)
+        );
+    }
+
+    /**
+     * Get the printed bar when given a value over the base value
+     */
+    @Test
+    public void printableStatusOverflowTest() {
+        assertEquals(
+                "██████████████████████████████████████████████████ 200%",
+                InputLayer.printableStatus(2.0, 1.0)
+        );
+    }
+
+    /**
+     * Get a printable format of a double
+     */
+    @Test
+    public void printableDoubleTest() {
+        assertEquals("3.14", InputLayer.printableDouble(3.14));
+    }
+
+    /**
+     * Get a printable format of a double that is a whole number
+     */
+    @Test
+    public void printableDoubleWholeNumberTest() {
+        assertEquals("100.00", InputLayer.printableDouble(100));
+    }
+
+    /**
      * Test comparing an array with a list of the same objects
      */
     @Test
@@ -226,7 +318,7 @@ public class InputLayerTest {
      */
     @Test
     public void compareWithListBothNullTest() {
-        assertTrue(InputLayer.compareWithList(new ArrayList<String>(), null));
+        assertTrue(InputLayer.compareWithList(new ArrayList<>(), null));
         assertTrue(InputLayer.compareWithList(null, null));
     }
 
