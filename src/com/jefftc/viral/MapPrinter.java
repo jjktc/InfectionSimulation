@@ -16,8 +16,7 @@ public class MapPrinter {
     /**
      * ASCII map of the world filled with characters to represent continent
      */
-    private static final String[] MAP = new String[]{
-            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⢀⣤⣶⢲⣶⡶⣂⢤⣤⣤⣤⣤⢤⠒⢶⢶⢲⢢⡤",
+    private static final String[] MAP = new String[] { "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⢀⣤⣶⢲⣶⡶⣂⢤⣤⣤⣤⣤⢤⠒⢶⢶⢲⢢⡤",
             "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡠⣄⡀⡀⣀⠀⣀⣀⢄⣶⣶⣿⠛⠉NNNNNNNNNNNN⠙⢹⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⢤⠒⢿⢿⢿⢿⢿⣀⣀⣀⣀⣀⡀⠀⠀⠀⣀⡀",
             "⠀⠀⠀⠀⠀⠀⠀⢠⠒⢾⢿⢿⢿⢿⡿⢶⣶⣶⢶⢶⢶⢷⠾NNNNNNNNNNN⣿⢿⣄NNNNNNNN⢉⠿⠿⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢤⢶⢲⢿⢶⠒⠤⡀⢀⠤⣤⣤⣤⢤⢽⠙⣻AAAAAAAAAAAAA⠙⢿⣿⢿⢿⠙⠙⢿⢿⢿⢶⢶⢶⢶⢶⢶⠒⢤⠤⣀⡀",
             "⠀⠀⠀⠀⡠⠛⠉⠉⢿⠙⠙NNNNNNNNNNNNNNNN⠛⠁⠛⠛⢤NN⡿⠃⠀⠀⠛⠘⡉⢿⠗⠛⡿⠀⠀⠀⠙⠛⠛⠁⠀⠀⠀⠀⢀⢴⠙⠁⡹EEEEEEEEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA⢹⡉⣽ ⠙⠙⣿⠉⠁",
@@ -42,12 +41,11 @@ public class MapPrinter {
             "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸SSSSS⠫⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⠉⠉⠀⠀⠀⠀⠉⢻⠙⠙⠙⡿⠁⠀⠀⠀⠀⠀⠀⠀⡆",
             "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿SS⡟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡄⠟⠉",
             "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸SS⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠾⠛⠁",
-            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻S⢿",
-            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠀⠀⠉⠁",
-    };
+            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻S⢿", "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠀⠀⠉⠁", };
 
     /**
-     * Fill in and clear out junk from the main map to create one tailored for the infection
+     * Fill in and clear out junk from the main map to create one tailored for the
+     * infection
      *
      * @param percentages the percent to fill in each continent
      * @return the filtered map
@@ -58,18 +56,12 @@ public class MapPrinter {
         if (percentages.length == ViralSimulationCountries.TOTAL_CONTINENTS) {
             for (String line : MAP) {
                 String filteredLine = line;
-                filteredLine = filterLine(filteredLine, "N",
-                        percentages[ViralSimulationCountries.NORTH_AMERICA]);
-                filteredLine = filterLine(filteredLine, "S",
-                        percentages[ViralSimulationCountries.SOUTH_AMERICA]);
-                filteredLine = filterLine(filteredLine, "E",
-                        percentages[ViralSimulationCountries.EUROPE]);
-                filteredLine = filterLine(filteredLine, "A",
-                        percentages[ViralSimulationCountries.ASIA]);
-                filteredLine = filterLine(filteredLine, "U",
-                        percentages[ViralSimulationCountries.AUSTRALIA]);
-                filteredLine = filterLine(filteredLine, "F",
-                        percentages[ViralSimulationCountries.AFRICA]);
+                filteredLine = filterLine(filteredLine, "N", percentages[ViralSimulationCountries.NORTH_AMERICA]);
+                filteredLine = filterLine(filteredLine, "S", percentages[ViralSimulationCountries.SOUTH_AMERICA]);
+                filteredLine = filterLine(filteredLine, "E", percentages[ViralSimulationCountries.EUROPE]);
+                filteredLine = filterLine(filteredLine, "A", percentages[ViralSimulationCountries.ASIA]);
+                filteredLine = filterLine(filteredLine, "U", percentages[ViralSimulationCountries.AUSTRALIA]);
+                filteredLine = filterLine(filteredLine, "F", percentages[ViralSimulationCountries.AFRICA]);
 
                 filteredMap.add(filteredLine);
             }

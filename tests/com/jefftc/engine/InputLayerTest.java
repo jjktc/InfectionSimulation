@@ -169,8 +169,8 @@ public class InputLayerTest {
     }
 
     /**
-     * Test the command detection with alternate versions of command stems
-     * aka "exit" is another accepted version of "quit"
+     * Test the command detection with alternate versions of command stems aka
+     * "exit" is another accepted version of "quit"
      */
     @Test
     public void detectCommandAltTest() {
@@ -179,7 +179,8 @@ public class InputLayerTest {
     }
 
     /**
-     * Test command detection with a command followed by a body that shouldn't be there
+     * Test command detection with a command followed by a body that shouldn't be
+     * there
      */
     @Test
     public void detectCommandUnexpectedBodyTest() {
@@ -228,10 +229,7 @@ public class InputLayerTest {
      */
     @Test
     public void printableStatusTest() {
-        assertEquals(
-                "█████████████████████████████████████████████░░░░░ 90%",
-                InputLayer.printableStatus(0.9, 1.0)
-        );
+        assertEquals("█████████████████████████████████████████████░░░░░ 90%", InputLayer.printableStatus(0.9, 1.0));
     }
 
     /**
@@ -239,10 +237,7 @@ public class InputLayerTest {
      */
     @Test
     public void printableStatusOverflowTest() {
-        assertEquals(
-                "██████████████████████████████████████████████████ 200%",
-                InputLayer.printableStatus(2.0, 1.0)
-        );
+        assertEquals("██████████████████████████████████████████████████ 200%", InputLayer.printableStatus(2.0, 1.0));
     }
 
     /**
@@ -321,6 +316,5 @@ public class InputLayerTest {
         assertTrue(InputLayer.compareWithList(new ArrayList<>(), null));
         assertTrue(InputLayer.compareWithList(null, null));
     }
-
 
 }

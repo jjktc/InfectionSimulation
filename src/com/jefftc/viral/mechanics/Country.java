@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * A Country is an abstract base class that determines how the infection spreads with different
- * actions available at different types of locations
+ * A Country is an abstract base class that determines how the infection spreads
+ * with different actions available at different types of locations
  */
 public abstract class Country {
 
@@ -17,8 +17,8 @@ public abstract class Country {
     private static final int MILLION = 1000000;
 
     /**
-     * Heat and dampness increase the chance of disease spread
-     * Wealth decreases the chance of disease spread
+     * Heat and dampness increase the chance of disease spread Wealth decreases the
+     * chance of disease spread
      */
     private static final double HEAT_INFECTIOUSNESS = 0.2;
     private static final double DAMPNESS_INFECTIOUSNESS = 0.1;
@@ -58,20 +58,21 @@ public abstract class Country {
     protected boolean bordersOpen = true;
 
     /**
-     * Create a Country with a given name, population size, heat, dampness, and array of connections
+     * Create a Country with a given name, population size, heat, dampness, and
+     * array of connections
      *
      * @param name                   the name of the Country
      * @param continentCode          the code of the continent it belongs to
      * @param landConnectionNames    the array of connected Country objects via land
-     * @param nonLandConnectionNames the array of connected Country objects via non-land
+     * @param nonLandConnectionNames the array of connected Country objects via
+     *                               non-land
      * @param population             the total population size (in millions)
      * @param heat                   the heat (out of 1.0)
      * @param dampness               the dampness (out of 1.0)
      * @param wealth                 the wealth (out of 1.0)
      */
-    public Country(String name, int continentCode, String[] landConnectionNames,
-                   String[] nonLandConnectionNames, double population, double heat, double dampness,
-                   double wealth) {
+    public Country(String name, int continentCode, String[] landConnectionNames, String[] nonLandConnectionNames,
+            double population, double heat, double dampness, double wealth) {
         this.name = name;
         this.continentCode = continentCode;
         this.landConnectionNames = landConnectionNames;
@@ -98,7 +99,8 @@ public abstract class Country {
     }
 
     /**
-     * Check for the existence of the connection names and then add them to the list of connections
+     * Check for the existence of the connection names and then add them to the list
+     * of connections
      *
      * @param destination     the list to add connections to
      * @param connectionNames the array of Country names
@@ -113,15 +115,13 @@ public abstract class Country {
     }
 
     /**
-     * Heat and dampness increase chance of spread (due to factors like parasitic insects)
-     * Poverty increases the chance of spread as well (due to lack of preventative measures)
+     * Heat and dampness increase chance of spread (due to factors like parasitic
+     * insects) Poverty increases the chance of spread as well (due to lack of
+     * preventative measures)
      */
     private void calculateMultipliers() {
-        this.internalSpreadMultiplier = (
-                heat * HEAT_INFECTIOUSNESS
-                        + dampness * DAMPNESS_INFECTIOUSNESS
-                        + (1.0 - this.wealth) * WEALTH_INFECTIOUSNESS
-        );
+        this.internalSpreadMultiplier = (heat * HEAT_INFECTIOUSNESS + dampness * DAMPNESS_INFECTIOUSNESS
+                + (1.0 - this.wealth) * WEALTH_INFECTIOUSNESS);
 
         this.externalSpreadMultiplier = this.internalSpreadMultiplier;
         this.internalSpreadMultiplier /= LAND_THRESHOLD;
@@ -175,7 +175,8 @@ public abstract class Country {
     }
 
     /**
-     * Get if the Country is connected to an infected Country with a percentage over the threshold
+     * Get if the Country is connected to an infected Country with a percentage over
+     * the threshold
      *
      * @param threshold the point to determine if it is infected
      * @return if there is an infected connection
@@ -186,7 +187,8 @@ public abstract class Country {
     }
 
     /**
-     * Get if the Country is connected to an infected Country by a list of connections
+     * Get if the Country is connected to an infected Country by a list of
+     * connections
      *
      * @param connections the list of connections
      * @param threshold   the threshold to determine if it is infected
@@ -226,8 +228,8 @@ public abstract class Country {
     }
 
     /**
-     * Advance the Country Epoch. Should result in spreading the infection both internally
-     * and potentially externally
+     * Advance the Country Epoch. Should result in spreading the infection both
+     * internally and potentially externally
      *
      * @param symptoms the list of Symptom objects to apply to infectivity
      */
@@ -253,8 +255,9 @@ public abstract class Country {
     public abstract void spreadInternally(List<Symptom> symptoms);
 
     /**
-     * Closes the borders, decreasing chance of spread, controllable by player. Country objects
-     * will automatically do this if their neighboring countries become infected
+     * Closes the borders, decreasing chance of spread, controllable by player.
+     * Country objects will automatically do this if their neighboring countries
+     * become infected
      */
     public abstract void closeBorders();
 

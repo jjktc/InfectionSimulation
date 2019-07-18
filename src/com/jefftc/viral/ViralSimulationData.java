@@ -24,23 +24,14 @@ public class ViralSimulationData {
     /**
      * Array of Command objects available to the user
      */
-    public static final Command[] COMMANDS = new Command[]{
-            new Command(new String[]{
-                    "quit", "exit", "leave", "abandon", "stop"
-            }, false),
-            new Command(new String[]{
-                    "info", "status"
-            }, true)
-    };
+    public static final Command[] COMMANDS = new Command[] {
+            new Command(new String[] { "quit", "exit", "leave", "abandon", "stop" }, false),
+            new Command(new String[] { "info", "status" }, true) };
 
     /**
      * Array of all of the Symptoms
      */
-    public static final Symptom[] SYMPTOMS = new Symptom[]{
-            new Cough(),
-            new Fever(),
-            new RunnyNose()
-    };
+    public static final Symptom[] SYMPTOMS = new Symptom[] { new Cough(), new Fever(), new RunnyNose() };
 
     /**
      * Initialize the data for ViralSimulation

@@ -10,8 +10,8 @@ import com.jefftc.viral.mechanics.Symptom;
 import java.util.*;
 
 /**
- * Simulation of an infection (inspired by Plague Inc.)
- * User chooses the starting location of an infection and then can add symptoms once every unit
+ * Simulation of an infection (inspired by Plague Inc.) User chooses the
+ * starting location of an infection and then can add symptoms once every unit
  * of time and gets feedback on how it has spread
  */
 public class ViralSimulation extends Simulation {
@@ -81,8 +81,7 @@ public class ViralSimulation extends Simulation {
 
         int startingCountryIndex = this.io.expectInt(0, countries.length);
         countries[startingCountryIndex].startInfection();
-        this.io.println("Infection originates in " +
-                countries[startingCountryIndex].getName());
+        this.io.println("Infection originates in " + countries[startingCountryIndex].getName());
         System.out.println();
     }
 
@@ -98,9 +97,8 @@ public class ViralSimulation extends Simulation {
     }
 
     /**
-     * Process the user input at the beginning of each run.
-     * In Viral Simulation, all the user input is at the beginning, the user can now merely check
-     * on status
+     * Process the user input at the beginning of each run. In Viral Simulation, all
+     * the user input is at the beginning, the user can now merely check on status
      */
     @Override
     public void processInput() {
@@ -113,28 +111,26 @@ public class ViralSimulation extends Simulation {
             String body = command.getBody(fullInput);
 
             switch (command.getCommand()) {
-                case "quit":
-                    // Close the entire Simulation
-                    System.exit(0);
-                    break;
+            case "quit":
+                // Close the entire Simulation
+                System.exit(0);
+                break;
 
-                case "info":
-                    // Print out info on the specified Country given in body
-                    Country country = ViralSimulationData.findCountry(body);
-                    if (country != null) {
-                        this.io.println("Information for " + country.getName());
-                        this.io.printFormatted(INFO_COL_WIDTH, true,
-                                "Population:, " + country.getPopulation());
-                        this.io.printFormatted(INFO_COL_WIDTH, true,
-                                "Infected:, " + country.getInfectedPopulation());
-                    } else {
-                        this.io.println("Could not find a Country with the given name");
-                    }
-                    break;
+            case "info":
+                // Print out info on the specified Country given in body
+                Country country = ViralSimulationData.findCountry(body);
+                if (country != null) {
+                    this.io.println("Information for " + country.getName());
+                    this.io.printFormatted(INFO_COL_WIDTH, true, "Population:, " + country.getPopulation());
+                    this.io.printFormatted(INFO_COL_WIDTH, true, "Infected:, " + country.getInfectedPopulation());
+                } else {
+                    this.io.println("Could not find a Country with the given name");
+                }
+                break;
 
-                default:
-                    this.io.println("Sorry, did not recognize the given command");
-                    break;
+            default:
+                this.io.println("Sorry, did not recognize the given command");
+                break;
             }
         }
     }
@@ -240,7 +236,8 @@ public class ViralSimulation extends Simulation {
     private void addAllCountryBars(List<String> names, List<Double> percentages, List<Country> infected) {
         infected.sort(Comparator.comparing(Country::getInfectedPercentage).reversed());
         for (Country country : infected) {
-            // Print out all individual infected Countries if Continent isn't entirely infected
+            // Print out all individual infected Countries if Continent isn't entirely
+            // infected
             this.totalInfectedPopulation += country.getInfectedPopulation();
             this.continentInfectedPopulations[country.getContinentCode()] += country.getInfectedPopulation();
 

@@ -13,30 +13,13 @@ import static org.junit.Assert.*;
 
 public class CountryTest {
 
-    private static Country[] countries = new Country[]{
-            new CoastalCountry("Australia", ViralSimulationCountries.AUSTRALIA,
-                    new String[]{
-                    },
-                    new String[]{
-                            "New Zealand"
-                    },
-                    24.1, 0.6, 0.4, 0.9
-            ),
-            new CoastalCountry("New Zealand", ViralSimulationCountries.AUSTRALIA,
-                    new String[]{
-                    },
-                    new String[]{
-                            "Australia"
-                    },
-                    4.7, 0.55, 0.5, 0.8
-            ),
-            new CoastalCountry("Wakanda", ViralSimulationCountries.AFRICA,
-                    new String[]{
-                    },
-                    new String[]{
-                    },
-                    0.5, 0.5, 0.5, 1.0)
-    };
+    private static Country[] countries = new Country[] {
+            new CoastalCountry("Australia", ViralSimulationCountries.AUSTRALIA, new String[] {},
+                    new String[] { "New Zealand" }, 24.1, 0.6, 0.4, 0.9),
+            new CoastalCountry("New Zealand", ViralSimulationCountries.AUSTRALIA, new String[] {},
+                    new String[] { "Australia" }, 4.7, 0.55, 0.5, 0.8),
+            new CoastalCountry("Wakanda", ViralSimulationCountries.AFRICA, new String[] {}, new String[] {}, 0.5, 0.5,
+                    0.5, 1.0) };
 
     /**
      * Prepare the country array

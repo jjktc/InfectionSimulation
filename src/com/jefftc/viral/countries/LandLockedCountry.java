@@ -6,7 +6,8 @@ import com.jefftc.viral.mechanics.Symptom;
 import java.util.List;
 
 /**
- * A LandLockedCountry is a type of Country that can only transmit the infection over land
+ * A LandLockedCountry is a type of Country that can only transmit the infection
+ * over land
  */
 public class LandLockedCountry extends Country {
 
@@ -21,7 +22,8 @@ public class LandLockedCountry extends Country {
     private static final double BORDER_CLOSE_THRESHOLD = 0.75;
 
     /**
-     * Create a Country with a given name, population size, heat, dampness, and array of connections
+     * Create a Country with a given name, population size, heat, dampness, and
+     * array of connections
      *
      * @param name            the name of the Country
      * @param continentCode   the code of the continent it belongs to
@@ -31,14 +33,14 @@ public class LandLockedCountry extends Country {
      * @param dampness        the dampness (out of 1.0)
      * @param wealth          the wealth (out of 1.0)
      */
-    public LandLockedCountry(String name, int continentCode, String[] connectionNames, double population,
-                             double heat, double dampness, double wealth) {
-        super(name, continentCode, connectionNames, new String[]{}, population, heat, dampness, wealth);
+    public LandLockedCountry(String name, int continentCode, String[] connectionNames, double population, double heat,
+            double dampness, double wealth) {
+        super(name, continentCode, connectionNames, new String[] {}, population, heat, dampness, wealth);
     }
 
     /**
-     * Advance the Country Epoch. Should result in spreading the infection both internally
-     * and potentially externally
+     * Advance the Country Epoch. Should result in spreading the infection both
+     * internally and potentially externally
      *
      * @param symptoms the list of Symptom objects to apply to infectivity
      */
@@ -54,9 +56,10 @@ public class LandLockedCountry extends Country {
     }
 
     /**
-     * Both LandLocked and Coastal Country objects can spread the infection over land.
-     * LandLocked Countries face a penalty where it is extra likely to spread by land
-     * (Logically this is because people only travel by land rather than air/sea)
+     * Both LandLocked and Coastal Country objects can spread the infection over
+     * land. LandLocked Countries face a penalty where it is extra likely to spread
+     * by land (Logically this is because people only travel by land rather than
+     * air/sea)
      */
     private void spreadByLand() {
         if (this.landConnections.size() > 0) {
@@ -100,10 +103,8 @@ public class LandLockedCountry extends Country {
      */
     @Override
     public void spreadInternally(List<Symptom> symptoms) {
-        double infectedIncrease = (this.population - this.infectedPopulation)
-                * this.internalSpreadChance;
-        double minimumIncrease = MINIMUM_INFECTION_MULTIPLIER * this.getPopulation()
-                / LAND_LOCKED_PENALTY;
+        double infectedIncrease = (this.population - this.infectedPopulation) * this.internalSpreadChance;
+        double minimumIncrease = MINIMUM_INFECTION_MULTIPLIER * this.getPopulation() / LAND_LOCKED_PENALTY;
         if (infectedIncrease < minimumIncrease) {
             infectedIncrease = minimumIncrease;
         }
@@ -113,15 +114,14 @@ public class LandLockedCountry extends Country {
 
     /**
      * Closes the land borders, decreasing chance of spread, controllable by player.
-     * Land Locked Countries are less likely to close the border until threat is higher.
-     * Wealthier countries close borders earlier.
-     * Land Locked Countries close borders based on neighboring countries being infected
+     * Land Locked Countries are less likely to close the border until threat is
+     * higher. Wealthier countries close borders earlier. Land Locked Countries
+     * close borders based on neighboring countries being infected
      */
     @Override
     public void closeBorders() {
         if (this.bordersOpen) {
-            boolean imminentThreat =
-                    this.isConnectedToInfectedCountry(BORDER_CLOSE_THRESHOLD);
+            boolean imminentThreat = this.isConnectedToInfectedCountry(BORDER_CLOSE_THRESHOLD);
             if (Math.random() <= this.wealth) {
                 // Wealthy nations are more likely to close borders since they detect it
                 this.bordersOpen = !imminentThreat;

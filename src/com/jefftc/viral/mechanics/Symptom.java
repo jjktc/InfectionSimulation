@@ -1,7 +1,8 @@
 package com.jefftc.viral.mechanics;
 
 /**
- * A Symptom is an abstract "thing" that has altered infectivity depending on the region
+ * A Symptom is an abstract "thing" that has altered infectivity depending on
+ * the region
  */
 public abstract class Symptom {
 

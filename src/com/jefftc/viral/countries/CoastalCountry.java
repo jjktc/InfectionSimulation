@@ -6,7 +6,8 @@ import com.jefftc.viral.mechanics.Symptom;
 import java.util.List;
 
 /**
- * CoastalCountry is a type of Country that can pass the infection over air or water as well as land
+ * CoastalCountry is a type of Country that can pass the infection over air or
+ * water as well as land
  */
 public class CoastalCountry extends Country {
 
@@ -21,27 +22,27 @@ public class CoastalCountry extends Country {
     private static final double SPREAD_OVER_CLOSED_BORDER_CHANCE = 0.2;
 
     /**
-     * Create a Country with a given name, population size, heat, dampness, and array of connections
+     * Create a Country with a given name, population size, heat, dampness, and
+     * array of connections
      *
      * @param name                   the name of the Country
      * @param continentCode          the code of the continent it belongs to
      * @param landConnectionNames    the array of connected Country objects via land
-     * @param nonLandConnectionNames the array of connected Country objects via non-land
+     * @param nonLandConnectionNames the array of connected Country objects via
+     *                               non-land
      * @param population             the total population size (in millions)
      * @param heat                   the heat (out of 1.0)
      * @param dampness               the dampness (out of 1.0)
      * @param wealth                 the wealth (out of 1.0)
      */
-    public CoastalCountry(String name, int continentCode, String[] landConnectionNames,
-                          String[] nonLandConnectionNames, double population, double heat,
-                          double dampness, double wealth) {
-        super(name, continentCode, landConnectionNames, nonLandConnectionNames, population, heat,
-                dampness, wealth);
+    public CoastalCountry(String name, int continentCode, String[] landConnectionNames, String[] nonLandConnectionNames,
+            double population, double heat, double dampness, double wealth) {
+        super(name, continentCode, landConnectionNames, nonLandConnectionNames, population, heat, dampness, wealth);
     }
 
     /**
-     * Advance the Country Epoch. Should result in spreading the infection both internally
-     * and potentially externally
+     * Advance the Country Epoch. Should result in spreading the infection both
+     * internally and potentially externally
      *
      * @param symptoms the list of Symptom objects to apply to infectivity
      */
@@ -58,7 +59,8 @@ public class CoastalCountry extends Country {
     }
 
     /**
-     * Both LandLocked and Coastal Country objects can spread the infection over land
+     * Both LandLocked and Coastal Country objects can spread the infection over
+     * land
      */
     private void spreadByLand() {
         if (this.landConnections.size() > 0) {
@@ -73,11 +75,13 @@ public class CoastalCountry extends Country {
     }
 
     /**
-     * Only Coastal Country objects can spread the infection by means other than land (ie planes/boats)
+     * Only Coastal Country objects can spread the infection by means other than
+     * land (ie planes/boats)
      */
     private void spreadByAir() {
         if (this.bordersOpen || Math.random() < SPREAD_OVER_CLOSED_BORDER_CHANCE) {
-            // Unlike a Land border, non-land borders can be closed effectively to prevent spread
+            // Unlike a Land border, non-land borders can be closed effectively to prevent
+            // spread
             if (this.nonLandConnections.size() > 0) {
                 if (this.infectedPercentage > NON_LAND_THRESHOLD) {
                     // Enough people infected to cross border
@@ -120,8 +124,7 @@ public class CoastalCountry extends Country {
      */
     @Override
     public void spreadInternally(List<Symptom> symptoms) {
-        double infectedIncrease = (this.population - this.infectedPopulation)
-                * this.internalSpreadChance;
+        double infectedIncrease = (this.population - this.infectedPopulation) * this.internalSpreadChance;
         double minimumIncrease = MINIMUM_INFECTION_MULTIPLIER * this.getPopulation();
         if (infectedIncrease < minimumIncrease) {
             infectedIncrease = minimumIncrease;
@@ -132,15 +135,14 @@ public class CoastalCountry extends Country {
 
     /**
      * Closes the borders, decreasing chance of spread, controllable by player.
-     * Coastal Country objects are more aggressive with border closing due to higher risk of spread.
-     * Wealthy countries close borders earlier.
-     * Coastal Countries close borders based on the overall world state
+     * Coastal Country objects are more aggressive with border closing due to higher
+     * risk of spread. Wealthy countries close borders earlier. Coastal Countries
+     * close borders based on the overall world state
      */
     @Override
     public void closeBorders() {
         if (this.bordersOpen) {
-            boolean imminentThreat =
-                    this.simulation.getTotalInfectedPercentage() > BORDER_CLOSE_THRESHOLD;
+            boolean imminentThreat = this.simulation.getTotalInfectedPercentage() > BORDER_CLOSE_THRESHOLD;
             if (Math.random() < this.wealth) {
                 // Wealthy nations are more likely to close borders since they detect it
                 this.bordersOpen = !imminentThreat;

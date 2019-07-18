@@ -53,7 +53,8 @@ public class CommandTest {
     }
 
     /**
-     * Test if a command can be detected when extra spaces are before and/or after it
+     * Test if a command can be detected when extra spaces are before and/or after
+     * it
      */
     @Test
     public void matchFormatSpacedOutTest() {
@@ -98,8 +99,7 @@ public class CommandTest {
      */
     @Test
     public void getBodyTest() {
-        assertEquals("country",
-                commands[ViralSimulationData.CMD_INFO].getBody("info country"));
+        assertEquals("country", commands[ViralSimulationData.CMD_INFO].getBody("info country"));
     }
 
     /**
@@ -123,8 +123,7 @@ public class CommandTest {
      */
     @Test
     public void getBodyTabsTest() {
-        assertEquals("country",
-                commands[ViralSimulationData.CMD_INFO].getBody("info\tcountry"));
+        assertEquals("country", commands[ViralSimulationData.CMD_INFO].getBody("info\tcountry"));
     }
 
     /**
@@ -132,8 +131,7 @@ public class CommandTest {
      */
     @Test
     public void getBodyUnexpectedTest() {
-        assertEquals("stuff here",
-                commands[ViralSimulationData.CMD_QUIT].getBody("quit stuff here"));
+        assertEquals("stuff here", commands[ViralSimulationData.CMD_QUIT].getBody("quit stuff here"));
     }
 
 }

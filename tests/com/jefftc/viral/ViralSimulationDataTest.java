@@ -23,11 +23,8 @@ public class ViralSimulationDataTest {
      */
     @Test
     public void findCountryTest() {
-        assertEquals(
-                "United States of America",
-                Objects.requireNonNull(
-                        ViralSimulationData.findCountry("United States of America")).getName()
-        );
+        assertEquals("United States of America",
+                Objects.requireNonNull(ViralSimulationData.findCountry("United States of America")).getName());
     }
 
     /**
@@ -35,11 +32,8 @@ public class ViralSimulationDataTest {
      */
     @Test
     public void findCountryCaseInsensitiveTest() {
-        assertEquals(
-                "United States of America",
-                Objects.requireNonNull(
-                        ViralSimulationData.findCountry("united states of AMERICA")).getName()
-        );
+        assertEquals("United States of America",
+                Objects.requireNonNull(ViralSimulationData.findCountry("united states of AMERICA")).getName());
     }
 
     /**

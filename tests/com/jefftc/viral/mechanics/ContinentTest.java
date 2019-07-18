@@ -24,18 +24,9 @@ public class ContinentTest {
      */
     @Before
     public void reset() {
-        this.continent = new Continent(
-                "Name",
-                Arrays.asList(new Country[]{
-                        new CoastalCountry("New Zealand", 0,
-                                new String[]{
-                                },
-                                new String[]{
-                                },
-                                NEW_ZEALAND_POPULATION, NEW_ZEALAND_HEAT, NEW_ZEALAND_DAMPNESS, NEW_ZEALAND_WEALTH
-                        ),
-                })
-        );
+        this.continent = new Continent("Name",
+                Arrays.asList(new Country[] { new CoastalCountry("New Zealand", 0, new String[] {}, new String[] {},
+                        NEW_ZEALAND_POPULATION, NEW_ZEALAND_HEAT, NEW_ZEALAND_DAMPNESS, NEW_ZEALAND_WEALTH), }));
     }
 
     /**
@@ -75,7 +66,8 @@ public class ContinentTest {
     }
 
     /**
-     * Check if infecting everyone in a continent allows it to be considered all infected
+     * Check if infecting everyone in a continent allows it to be considered all
+     * infected
      */
     @Test
     public void isAllInfectedTest() {

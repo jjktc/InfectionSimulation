@@ -49,8 +49,8 @@ public class InputLayer {
     }
 
     /**
-     * Get input, automatically chooses from the user scanner or selects predefined data
-     * Store all queries to the input log
+     * Get input, automatically chooses from the user scanner or selects predefined
+     * data Store all queries to the input log
      *
      * @return the filtered and chosen input
      */
@@ -99,23 +99,23 @@ public class InputLayer {
     public boolean expectBoolean() {
         String response = this.receiveInput().toLowerCase();
         switch (response) {
-            case "true":
-            case "t":
-            case "yes":
-            case "y":
-            case "1":
-                // True aka Yes
-                return true;
-            case "false":
-            case "f":
-            case "no":
-            case "n":
-            case "0":
-                // False aka No
-                return false;
-            case "quit":
-                // Quit the program
-                System.exit(0);
+        case "true":
+        case "t":
+        case "yes":
+        case "y":
+        case "1":
+            // True aka Yes
+            return true;
+        case "false":
+        case "f":
+        case "no":
+        case "n":
+        case "0":
+            // False aka No
+            return false;
+        case "quit":
+            // Quit the program
+            System.exit(0);
         }
 
         this.println("You must supply a yes or no answer, please try again");
@@ -211,8 +211,7 @@ public class InputLayer {
      * @param percentage the percentage of the bar
      */
     private void printBar(String message, int width, double percentage) {
-        this.printFormatted(width, true,
-                message + ":, " + printableStatus(percentage, BASE_VALUE));
+        this.printFormatted(width, true, message + ":, " + printableStatus(percentage, BASE_VALUE));
     }
 
     /**
